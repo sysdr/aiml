@@ -1,0 +1,41 @@
+# Day 1: Python Basics for AI - Required Packages
+# ================================================
+
+# Core Python packages for interactive learning
+jupyter>=1.0.0
+ipython>=8.10.0
+
+# Data handling (essential for AI)
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# HTTP requests (for API integrations)
+requests>=2.31.0
+
+# JSON handling (already in Python standard library, but good to note)
+# json - included with Python
+
+# Future lessons preparation (lightweight installations)
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Development and testing
+pytest>=7.4.0
+
+# Optional: AI/ML libraries preview (not required for Day 1)
+# scikit-learn>=1.3.0  # Uncomment for Day 10+
+# tensorflow>=2.13.0   # Uncomment for Day 30+
+# torch>=2.0.0         # Uncomment for Day 40+
+
+# Web development (for simple AI interfaces)
+flask>=2.3.0
+
+# Text processing (useful for AI applications)
+nltk>=3.8.0
+
+# Note: This requirements.txt grows throughout the 180-day course
+# Day 1 only needs: jupyter, ipython, requests, python-dotenv
+# Other packages are installed for future lessons to avoid setup delays
