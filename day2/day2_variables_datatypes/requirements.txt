@@ -1,0 +1,19 @@
+# Day 2: Variables, Data Types, and Operators for AI
+# Python 3.11+ required
+
+# Core data science libraries
+jupyter==1.0.0
+ipython==8.17.2
+
+# For future AI/ML lessons
+numpy==1.25.2
+pandas==2.1.4
+
+# Testing
+pytest==7.4.3
+
+# Code formatting (optional but recommended)
+black==23.11.0
+
+# Web dashboard
+flask==3.0.0

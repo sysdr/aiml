@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Dashboard - Day 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background-color: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-inactive {
+            background-color: #f44336;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .demo-controls input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+        }
+        
+        .demo-controls button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        
+        .demo-controls button:hover {
+            background: #5a6fd8;
+        }
+        
+        .demo-controls button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .conversation-log {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .conversation-entry {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .conversation-entry.user {
+            border-left-color: #4CAF50;
+        }
+        
+        .conversation-entry.agent {
+            border-left-color: #2196F3;
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f44336, #ff9800, #4CAF50);
+            transition: width 0.3s ease;
+        }
+        
+        .auto-demo-results {
+            margin-top: 20px;
+        }
+        
+        .auto-demo-result {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-controls {
+                flex-direction: column;
+            }
+            
+            .demo-controls input {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Agent Dashboard</h1>
+            <p>Day 2: Variables, Data Types, and Operators for AI</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>📊 Agent Status</h3>
+                <div class="metric">
+                    <span class="metric-label">Status:</span>
+                    <span class="metric-value">
+                        <span class="status-indicator status-active" id="status-indicator"></span>
+                        <span id="agent-status">Active</span>
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Agent Name:</span>
+                    <span class="metric-value" id="agent-name">Loading...</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Version:</span>
+                    <span class="metric-value" id="agent-version">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>📈 Performance Metrics</h3>
+                <div class="metric">
+                    <span class="metric-label">Total Interactions:</span>
+                    <span class="metric-value" id="total-interactions">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Success Rate:</span>
+                    <span class="metric-value" id="success-rate">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Confidence:</span>
+                    <span class="metric-value" id="avg-confidence">0%</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>🎯 Confidence Range</h3>
+                <div class="metric">
+                    <span class="metric-label">Min Confidence:</span>
+                    <span class="metric-value" id="min-confidence">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Max Confidence:</span>
+                    <span class="metric-value" id="max-confidence">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Current Confidence:</span>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="confidence-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>🎮 Interactive Demo</h3>
+            <div class="demo-controls">
+                <input type="text" id="user-input" placeholder="Type your message here..." />
+                <button onclick="sendMessage()">Send Message</button>
+                <button onclick="runAutoDemo()">Run Auto Demo</button>
+                <button onclick="clearLog()">Clear Log</button>
+            </div>
+            
+            <div id="demo-status"></div>
+            
+            <div class="conversation-log" id="conversation-log">
+                <div class="conversation-entry">
+                    <strong>System:</strong> AI Agent Dashboard initialized. Ready for interactions!
+                </div>
+            </div>
+            
+            <div id="auto-demo-results" class="auto-demo-results" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentMetrics = {};
+        
+        // Update metrics every 2 seconds
+        function updateMetrics() {
+            fetch('/api/metrics')
+                .then(response => response.json())
+                .then(data => {
+                    currentMetrics = data;
+                    updateDashboard(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching metrics:', error);
+                    showError('Failed to fetch metrics');
+                });
+        }
+        
+        function updateDashboard(data) {
+            // Update status
+            document.getElementById('agent-status').textContent = data.status;
+            document.getElementById('agent-name').textContent = data.agent_name;
+            document.getElementById('agent-version').textContent = data.version;
+            
+            // Update metrics
+            document.getElementById('total-interactions').textContent = data.total_interactions;
+            document.getElementById('success-rate').textContent = data.success_rate.toFixed(1) + '%';
+            document.getElementById('avg-confidence').textContent = (data.average_confidence * 100).toFixed(1) + '%';
+            document.getElementById('min-confidence').textContent = (data.min_confidence * 100).toFixed(1) + '%';
+            document.getElementById('max-confidence').textContent = (data.max_confidence * 100).toFixed(1) + '%';
+            
+            // Update confidence bar
+            const confidenceBar = document.getElementById('confidence-bar');
+            const confidencePercent = data.average_confidence * 100;
+            confidenceBar.style.width = confidencePercent + '%';
+            
+            // Update status indicator
+            const statusIndicator = document.getElementById('status-indicator');
+            if (data.is_active) {
+                statusIndicator.className = 'status-indicator status-active';
+            } else {
+                statusIndicator.className = 'status-indicator status-inactive';
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (!message) {
+                showError('Please enter a message');
+                return;
+            }
+            
+            showLoading('Sending message...');
+            
+            fetch('/api/demo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ input: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideStatus();
+                addConversationEntry('user', message);
+                addConversationEntry('agent', data.response);
+                input.value = '';
+                updateMetrics(); // Refresh metrics
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Failed to send message');
+            });
+        }
+        
+        function runAutoDemo() {
+            showLoading('Running auto demo...');
+            
+            fetch('/api/demo/auto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideStatus();
+                showSuccess('Auto demo completed successfully!');
+                
+                // Display results
+                const resultsDiv = document.getElementById('auto-demo-results');
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = '<h4>Auto Demo Results:</h4>';
+                
+                data.results.forEach((result, index) => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'auto-demo-result';
+                    resultDiv.innerHTML = `
+                        <strong>Interaction ${index + 1}:</strong><br>
+                        <strong>User:</strong> ${result.input}<br>
+                        <strong>Agent:</strong> ${result.response}<br>
+                        <strong>Confidence:</strong> ${(result.confidence * 100).toFixed(1)}%
+                    `;
+                    resultsDiv.appendChild(resultDiv);
+                });
+                
+                updateMetrics(); // Refresh metrics
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Failed to run auto demo');
+            });
+        }
+        
+        function addConversationEntry(type, message) {
+            const log = document.getElementById('conversation-log');
+            const entry = document.createElement('div');
+            entry.className = `conversation-entry ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const label = type === 'user' ? 'You' : 'AI Agent';
+            
+            entry.innerHTML = `
+                <strong>${label} (${timestamp}):</strong><br>
+                ${message}
+            `;
+            
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function clearLog() {
+            const log = document.getElementById('conversation-log');
+            log.innerHTML = '<div class="conversation-entry"><strong>System:</strong> Conversation log cleared.</div>';
+            document.getElementById('auto-demo-results').style.display = 'none';
+        }
+        
+        function showLoading(message) {
+            const statusDiv = document.getElementById('demo-status');
+            statusDiv.innerHTML = `<div class="loading">${message}</div>`;
+        }
+        
+        function showError(message) {
+            const statusDiv = document.getElementById('demo-status');
+            statusDiv.innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        function showSuccess(message) {
+            const statusDiv = document.getElementById('demo-status');
+            statusDiv.innerHTML = `<div class="success">${message}</div>`;
+        }
+        
+        function hideStatus() {
+            const statusDiv = document.getElementById('demo-status');
+            statusDiv.innerHTML = '';
+        }
+        
+        // Handle Enter key in input
+        document.getElementById('user-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Initial load and periodic updates
+        updateMetrics();
+        setInterval(updateMetrics, 2000);
+    </script>
+</body>
+</html>
