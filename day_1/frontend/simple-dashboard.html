@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Assistant Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #4f46e5;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .dashboard {
+            padding: 2rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .chat-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chat-section h3 {
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .chat-input input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        
+        .chat-input button {
+            padding: 0.75rem 1.5rem;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .chat-input button:hover {
+            background: #6366f1;
+        }
+        
+        .chat-input button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .response {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+        
+        .status-text {
+            color: #10b981;
+            font-weight: 500;
+        }
+        
+        .loading {
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #ef4444;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI Chat Assistant Dashboard</h1>
+            <p>Real-time metrics and interactive demo</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="status">
+                <div class="status-indicator"></div>
+                <span class="status-text">Backend API Connected</span>
+            </div>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="api-calls">0</div>
+                    <div class="metric-label">API Calls</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="success-rate">100%</div>
+                    <div class="metric-label">Success Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="avg-response-time">0ms</div>
+                    <div class="metric-label">Avg Response Time</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="uptime">0s</div>
+                    <div class="metric-label">Uptime</div>
+                </div>
+            </div>
+            
+            <div class="chat-section">
+                <h3>Live Demo - Chat with AI</h3>
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="Type your message here..." />
+                    <button id="send-button" onclick="sendMessage()">Send</button>
+                </div>
+                <div id="response" class="response">Send a message to see the AI response here...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let apiCalls = 0;
+        let startTime = Date.now();
+        let responseTimes = [];
+        
+        // Update uptime every second
+        setInterval(updateUptime, 1000);
+        
+        function updateUptime() {
+            const uptime = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('uptime').textContent = uptime + 's';
+        }
+        
+        function updateMetrics() {
+            document.getElementById('api-calls').textContent = apiCalls;
+            
+            if (responseTimes.length > 0) {
+                const avgTime = Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length);
+                document.getElementById('avg-response-time').textContent = avgTime + 'ms';
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const button = document.getElementById('send-button');
+            const responseDiv = document.getElementById('response');
+            
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Disable input and show loading
+            input.disabled = true;
+            button.disabled = true;
+            button.textContent = 'Sending...';
+            responseDiv.textContent = 'AI is thinking...';
+            responseDiv.className = 'response loading';
+            
+            const startTime = Date.now();
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_history: []
+                    })
+                });
+                
+                const data = await response.json();
+                const responseTime = Date.now() - startTime;
+                
+                apiCalls++;
+                responseTimes.push(responseTime);
+                
+                if (data.success) {
+                    responseDiv.textContent = data.response;
+                    responseDiv.className = 'response';
+                } else {
+                    responseDiv.textContent = 'Error: ' + (data.error_message || 'Unknown error');
+                    responseDiv.className = 'response error';
+                }
+                
+                updateMetrics();
+                
+            } catch (error) {
+                responseDiv.textContent = 'Error: ' + error.message;
+                responseDiv.className = 'response error';
+            } finally {
+                // Re-enable input
+                input.disabled = false;
+                button.disabled = false;
+                button.textContent = 'Send';
+                input.value = '';
+            }
+        }
+        
+        // Allow Enter key to send message
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Test API connection on load
+        async function testConnection() {
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/health');
+                const data = await response.json();
+                if (data.status === 'healthy') {
+                    console.log('Backend API is healthy');
+                }
+            } catch (error) {
+                console.error('Backend API connection failed:', error);
+                document.querySelector('.status-text').textContent = 'Backend API Disconnected';
+                document.querySelector('.status-indicator').style.background = '#ef4444';
+            }
+        }
+        
+        // Test connection on page load
+        testConnection();
+    </script>
+</body>
+</html>
