@@ -1,0 +1,15 @@
+# Day 6: Functions, Modules, and Libraries
+# Minimal dependencies for learning Python basics for AI
+
+# Standard library imports are used in this lesson
+# No external dependencies required for core functionality
+
+# Optional: For enhanced text processing (commented out for beginners)
+# nltk==3.8.1
+# textblob==0.17.1
+
+# For future lessons (uncomment when needed)
+# numpy==1.26.2
+# pandas==2.1.4
+# matplotlib==3.8.2
+# scikit-learn==1.3.2

@@ -1,0 +1,138 @@
+🤖 AI TEXT ANALYZER v1.0
+Day 6: Functions, Modules, and Libraries
+==================================================
+This tool demonstrates AI development patterns:
+• Functions for specific tasks
+• Modules for organization
+• Libraries for powerful features
+==================================================
+Choose mode: (d)emo or (i)nteractive? 🎯 DEMO MODE: Analyzing sample texts...
+
+📋 Sample 1:
+
+🤖 AI TEXT ANALYSIS REPORT
+==================================================
+📝 Original Text: I love this amazing course! It's helping me learn AI in such a clear way.
+🧹 Cleaned Text: i love this amazing course its helping me learn ai in such a clear way
+📊 Summary: Text contains 15 words with positive sentiment
+
+📈 TEXT FEATURES:
+   • Words: 15
+   • Unique words: 15
+   • Average word length: 3.73
+   • Characters: 70
+
+😊 SENTIMENT ANALYSIS:
+   • Overall sentiment: POSITIVE
+   • Confidence: 0.67
+   • Positive words found: 2
+   • Negative words found: 0
+
+🚀 AI READINESS ASSESSMENT:
+   • Score: 85/100 (Grade: A)
+   • Analysis:
+     - Good word count for analysis
+     - High word diversity
+     - Adequate vocabulary complexity
+
+==================================================
+
+📋 Sample 2:
+
+🤖 AI TEXT ANALYSIS REPORT
+==================================================
+📝 Original Text: This is confusing and I hate how complicated everything seems.
+🧹 Cleaned Text: this is confusing and i hate how complicated everything seems
+📊 Summary: Text contains 10 words with negative sentiment
+
+📈 TEXT FEATURES:
+   • Words: 10
+   • Unique words: 10
+   • Average word length: 5.2
+   • Characters: 61
+
+😊 SENTIMENT ANALYSIS:
+   • Overall sentiment: NEGATIVE
+   • Confidence: 0.5
+   • Positive words found: 0
+   • Negative words found: 1
+
+🚀 AI READINESS ASSESSMENT:
+   • Score: 100/100 (Grade: A)
+   • Analysis:
+     - Good word count for analysis
+     - High word diversity
+     - Good vocabulary complexity
+
+==================================================
+
+📋 Sample 3:
+
+🤖 AI TEXT ANALYSIS REPORT
+==================================================
+📝 Original Text: The weather is nice today. It is sunny outside.
+🧹 Cleaned Text: the weather is nice today it is sunny outside
+📊 Summary: Text contains 9 words with neutral sentiment
+
+📈 TEXT FEATURES:
+   • Words: 9
+   • Unique words: 8
+   • Average word length: 4.11
+   • Characters: 45
+
+😊 SENTIMENT ANALYSIS:
+   • Overall sentiment: NEUTRAL
+   • Confidence: 0.5
+   • Positive words found: 0
+   • Negative words found: 0
+
+🚀 AI READINESS ASSESSMENT:
+   • Score: 80/100 (Grade: A)
+   • Analysis:
+     - Adequate word count
+     - High word diversity
+     - Good vocabulary complexity
+
+==================================================
+
+📋 Sample 4:
+
+🤖 AI TEXT ANALYSIS REPORT
+==================================================
+📝 Original Text: AI will revolutionize technology and create incredible opportunities for innovation.
+🧹 Cleaned Text: ai will revolutionize technology and create incredible opportunities for innovation
+📊 Summary: Text contains 10 words with neutral sentiment
+
+📈 TEXT FEATURES:
+   • Words: 10
+   • Unique words: 10
+   • Average word length: 7.4
+   • Characters: 83
+
+😊 SENTIMENT ANALYSIS:
+   • Overall sentiment: NEUTRAL
+   • Confidence: 0.5
+   • Positive words found: 0
+   • Negative words found: 0
+
+🚀 AI READINESS ASSESSMENT:
+   • Score: 100/100 (Grade: A)
+   • Analysis:
+     - Good word count for analysis
+     - High word diversity
+     - Good vocabulary complexity
+
+🎮 INTERACTIVE MODE:
+
+==================================================
+Enter text to analyze (or 'quit' to exit):
+> Traceback (most recent call last):
+  File "/home/systemdr/git/aiml/day6/day6_functions_modules/lesson_code.py", line 312, in <module>
+    main()
+  File "/home/systemdr/git/aiml/day6/day6_functions_modules/lesson_code.py", line 285, in main
+    text = process_user_input()
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/systemdr/git/aiml/day6/day6_functions_modules/lesson_code.py", line 199, in process_user_input
+    text = input("> ").strip()
+           ^^^^^^^^^^^
+EOFError: EOF when reading a line
