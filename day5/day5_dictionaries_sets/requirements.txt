@@ -1,0 +1,9 @@
+# Core dependencies for Day 5
+pytest==7.4.3
+jupyter==1.0.0
+ipython==8.17.2
+google-generativeai==0.3.2
+
+# Development tools
+black==23.11.0
+pylint==3.0.3
