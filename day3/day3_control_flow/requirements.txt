@@ -1,0 +1,14 @@
+# Core Python packages for AI/ML development
+jupyter==1.0.0
+ipython==8.17.2
+
+# For future AI integration
+google-generativeai==0.3.2
+
+# Development and testing
+pytest==7.4.3
+colorama==0.4.6
+
+# Data handling (will be useful in upcoming lessons)
+pandas==2.1.4
+numpy==1.25.2
