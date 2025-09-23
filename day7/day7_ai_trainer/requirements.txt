@@ -1,0 +1,18 @@
+# Day 7: AI Assistant Training Simulator Dependencies
+# Minimal requirements for Python AI/ML learning
+
+# Core Python packages (usually included, but listed for completeness)
+typing-extensions>=4.0.0
+
+# For future AI lessons (installing now for environment consistency)
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Development and testing
+pytest>=7.0.0
+
+# Optional: For enhanced terminal experience
+colorama>=0.4.6
+
+# Note: This lesson uses only Python standard library
+# Future lessons will leverage these packages for ML operations

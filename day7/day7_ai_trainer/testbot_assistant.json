@@ -1,0 +1,36 @@
+{
+  "name": "TestBot",
+  "skills": {
+    "greeting": [
+      "Hello!",
+      "Hi there!",
+      "Good day!",
+      "Hello there!"
+    ],
+    "farewell": [
+      "Goodbye!",
+      "See you later!",
+      "Take care!"
+    ],
+    "thanks": [
+      "You're welcome!",
+      "Happy to help!",
+      "No problem!"
+    ]
+  },
+  "experience": 1,
+  "confidence": 0.7000000000000001,
+  "conversation_history": [
+    {
+      "input": "hello",
+      "category": "greeting",
+      "timestamp": "2025-09-23T15:16:48.002078"
+    },
+    {
+      "input": "goodbye",
+      "category": "farewell",
+      "timestamp": "2025-09-23T15:16:48.002196"
+    }
+  ],
+  "saved_at": "2025-09-23T15:16:48.002339"
+}

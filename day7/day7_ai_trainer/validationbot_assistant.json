@@ -1,0 +1,33 @@
+{
+  "name": "ValidationBot",
+  "skills": {
+    "greeting": [
+      "Hello!",
+      "Hi there!",
+      "Good day!"
+    ],
+    "farewell": [
+      "Goodbye!",
+      "See you later!",
+      "Take care!"
+    ],
+    "thanks": [
+      "You're welcome!",
+      "Happy to help!",
+      "No problem!"
+    ],
+    "test": [
+      "test response"
+    ]
+  },
+  "experience": 1,
+  "confidence": 0.65,
+  "conversation_history": [
+    {
+      "input": "hello",
+      "category": "greeting",
+      "timestamp": "2025-09-23T15:17:18.436665"
+    }
+  ],
+  "saved_at": "2025-09-23T15:17:18.436721"
+}

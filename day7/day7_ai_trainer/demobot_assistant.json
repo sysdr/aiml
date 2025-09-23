@@ -1,0 +1,53 @@
+{
+  "name": "DemoBot",
+  "skills": {
+    "greeting": [
+      "Hello!",
+      "Hi there!",
+      "Good day!",
+      "Hello! How can I help you today?"
+    ],
+    "farewell": [
+      "Goodbye!",
+      "See you later!",
+      "Take care!",
+      "Goodbye! Have a great day!"
+    ],
+    "thanks": [
+      "You're welcome!",
+      "Happy to help!",
+      "No problem!",
+      "You are very welcome!"
+    ]
+  },
+  "experience": 3,
+  "confidence": 0.98,
+  "conversation_history": [
+    {
+      "input": "hello",
+      "category": "greeting",
+      "timestamp": "2025-09-23T15:23:01.670089"
+    },
+    {
+      "input": "hi there",
+      "category": "greeting",
+      "timestamp": "2025-09-23T15:23:01.670381"
+    },
+    {
+      "input": "goodbye",
+      "category": "farewell",
+      "timestamp": "2025-09-23T15:23:01.670400"
+    },
+    {
+      "input": "thanks",
+      "category": "thanks",
+      "timestamp": "2025-09-23T15:23:01.670413"
+    },
+    {
+      "input": "unknown question",
+      "category": "unknown",
+      "timestamp": "2025-09-23T15:23:01.670426"
+    }
+  ],
+  "saved_at": "2025-09-23T15:23:01.670493"
+}
