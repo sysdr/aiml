@@ -1,0 +1,15 @@
+# Day 10: Matrices and Matrix Operations - Dependencies
+# Core scientific computing
+numpy>=1.24.0
+matplotlib>=3.6.0
+
+# Interactive learning
+jupyter>=1.0.0
+ipywidgets>=8.0.0
+
+# Development and testing
+pytest>=7.0.0
+
+# Optional: For enhanced visualizations
+seaborn>=0.12.0
+plotly>=5.17.0
