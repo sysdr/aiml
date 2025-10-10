@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 13: Derivatives Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(44, 62, 80, 0.1);
+            border: 1px solid #ecf0f1;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(44, 62, 80, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            color: #3498db;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .derivative-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .derivative-table th,
+        .derivative-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .derivative-table th {
+            background: #ecf0f1;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .derivative-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .training-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .prediction-section {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .prediction-input {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .prediction-input input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .prediction-btn {
+            background: white;
+            color: #27ae60;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .prediction-btn:hover {
+            background: #ecf0f1;
+            transform: translateY(-2px);
+        }
+
+        .prediction-result {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .sample-predictions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .prediction-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .prediction-size {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .prediction-price {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .key-takeaways {
+            background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .takeaway-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .takeaway-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .takeaway-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #8e44ad;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .prediction-input {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-calculator"></i> Day 13: Derivatives Dashboard</h1>
+            <p>Interactive visualization of derivatives and gradient descent in AI/ML</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Derivative Comparison Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-line card-icon"></i>
+                    <h2 class="card-title">Derivative Comparison</h2>
+                </div>
+                <p><strong>Function:</strong> f(x) = 2x² + 3x + 1</p>
+                <p><strong>Analytical derivative:</strong> f'(x) = 4x + 3</p>
+                
+                <table class="derivative-table">
+                    <thead>
+                        <tr>
+                            <th>x</th>
+                            <th>Numerical</th>
+                            <th>Analytical</th>
+                            <th>Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>0.0</td><td>3.000000</td><td>3.000000</td><td>0.00000000</td></tr>
+                        <tr><td>1.0</td><td>7.000000</td><td>7.000000</td><td>0.00000000</td></tr>
+                        <tr><td>2.0</td><td>11.000000</td><td>11.000000</td><td>0.00000000</td></tr>
+                        <tr><td>-1.0</td><td>-1.000000</td><td>-1.000000</td><td>0.00000000</td></tr>
+                        <tr><td>0.5</td><td>5.000000</td><td>5.000000</td><td>0.00000000</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Training Progress Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-brain card-icon"></i>
+                    <h2 class="card-title">Training Progress</h2>
+                </div>
+                
+                <div class="training-stats">
+                    <div class="stat-box">
+                        <div class="stat-value">200</div>
+                        <div class="stat-label">Epochs</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">1.270</div>
+                        <div class="stat-label">Final Error</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">$-16.75</div>
+                        <div class="stat-label">Weight</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">$475,941</div>
+                        <div class="stat-label">Bias</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="trainingChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Derivative Function Visualization -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-function card-icon"></i>
+                    <h2 class="card-title">Function & Derivative</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="functionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- House Price Predictions -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-home card-icon"></i>
+                    <h2 class="card-title">House Price Predictions</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Prediction Section -->
+        <div class="prediction-section">
+            <h2><i class="fas fa-magic"></i> Interactive Price Predictor</h2>
+            <div class="prediction-input">
+                <input type="number" id="squareFeet" placeholder="Enter square footage..." min="500" max="5000">
+                <button class="prediction-btn" onclick="predictPrice()">
+                    <i class="fas fa-calculator"></i> Predict Price
+                </button>
+            </div>
+            <div id="predictionResult" class="prediction-result" style="display: none;"></div>
+            
+            <h3 style="margin-top: 25px;">Sample Predictions</h3>
+            <div class="sample-predictions">
+                <div class="prediction-card">
+                    <div class="prediction-size">1,500 sq ft</div>
+                    <div class="prediction-price">$450,817.09</div>
+                </div>
+                <div class="prediction-card">
+                    <div class="prediction-size">2,000 sq ft</div>
+                    <div class="prediction-price">$442,442.42</div>
+                </div>
+                <div class="prediction-card">
+                    <div class="prediction-size">2,500 sq ft</div>
+                    <div class="prediction-price">$434,067.75</div>
+                </div>
+                <div class="prediction-card">
+                    <div class="prediction-size">3,000 sq ft</div>
+                    <div class="prediction-price">$425,693.08</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Takeaways -->
+        <div class="key-takeaways">
+            <h2><i class="fas fa-lightbulb"></i> Key Takeaways</h2>
+            <ul class="takeaway-list">
+                <li>Derivatives tell us the direction of steepest change</li>
+                <li>Gradient descent uses derivatives to minimize error</li>
+                <li>Data normalization is crucial for numerical stability</li>
+                <li>Learning rate must be carefully tuned</li>
+                <li>This is the foundation of how AI systems learn!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Training progress data
+        const trainingData = {
+            epochs: [0, 20, 40, 60, 80, 100, 120, 140, 160, 180],
+            errors: [1.280344, 1.279324, 1.278305, 1.277286, 1.276269, 1.275252, 1.274236, 1.273220, 1.272206, 1.271192],
+            weights: [-0.1170, -0.1165, -0.1161, -0.1156, -0.1152, -0.1148, -0.1143, -0.1139, -0.1134, -0.1130],
+            biases: [0.1823, 0.1822, 0.1822, 0.1821, 0.1820, 0.1819, 0.1819, 0.1818, 0.1817, 0.1817]
+        };
+
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            initTrainingChart();
+            initFunctionChart();
+            initPriceChart();
+        });
+
+        function initTrainingChart() {
+            const ctx = document.getElementById('trainingChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: trainingData.epochs,
+                    datasets: [{
+                        label: 'Training Error',
+                        data: trainingData.errors,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Error Reduction Over Time'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Mean Squared Error'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Epoch'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initFunctionChart() {
+            const ctx = document.getElementById('functionChart').getContext('2d');
+            
+            // Generate function and derivative data
+            const xValues = [];
+            const fValues = [];
+            const fPrimeValues = [];
+            
+            for (let x = -3; x <= 3; x += 0.1) {
+                xValues.push(x);
+                fValues.push(2 * x * x + 3 * x + 1);
+                fPrimeValues.push(4 * x + 3);
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [{
+                        label: 'f(x) = 2x² + 3x + 1',
+                        data: fValues,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }, {
+                        label: "f'(x) = 4x + 3",
+                        data: fPrimeValues,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Function and Its Derivative'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'x'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initPriceChart() {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            
+            // Sample house data
+            const houseData = [
+                {size: 1500, price: 450817.09},
+                {size: 2000, price: 442442.42},
+                {size: 2500, price: 434067.75},
+                {size: 3000, price: 425693.08}
+            ];
+
+            new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Predicted Prices',
+                        data: houseData.map(d => ({x: d.size, y: d.price})),
+                        backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                        borderColor: '#3498db',
+                        borderWidth: 2,
+                        pointRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'House Price Predictions'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Price ($)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Square Feet'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function predictPrice() {
+            const squareFeet = document.getElementById('squareFeet').value;
+            const resultDiv = document.getElementById('predictionResult');
+            
+            if (!squareFeet || squareFeet <= 0) {
+                alert('Please enter a valid square footage');
+                return;
+            }
+            
+            // Simple linear prediction based on learned parameters
+            // Using the learned weight and bias from the training
+            const weight = -16.75;
+            const bias = 475941.11;
+            const predictedPrice = weight * squareFeet + bias;
+            
+            resultDiv.innerHTML = `
+                <strong>Predicted Price for ${squareFeet} sq ft:</strong><br>
+                <span style="font-size: 1.5rem;">$${predictedPrice.toLocaleString()}</span>
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        // Add some interactive effects
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
