@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 14: Chain Rule & Neural Networks Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f2ff42 0%, #50346b 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            border-radius: 5px;
+        }
+
+        .neural-network {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .layer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .neuron {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .connection {
+            width: 2px;
+            height: 20px;
+            background: #667eea;
+            margin: 5px 0;
+        }
+
+        .values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .value-item {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .value-item h4 {
+            color: #1976d2;
+            margin-bottom: 5px;
+        }
+
+        .value-item .number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .gradient-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .gradient-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .gradient-step h4 {
+            margin-bottom: 5px;
+        }
+
+        .arrow {
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+
+        .plot-container {
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .realtime-metrics {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .realtime-metrics h2 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .metric-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-change {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .gradient-animation {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 400%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #3f3f3f, #1a1a1b);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .summary h2 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .summary p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .neural-network {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .gradient-flow {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 Day 14: Chain Rule & Neural Networks</h1>
+            <p>Mathematical Foundation of AI Learning</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Chain Rule Fundamentals -->
+            <div class="card">
+                <h2>🔗 Chain Rule Fundamentals</h2>
+                <p><strong>Function:</strong> f(g(x)) = sin(x²)</p>
+                
+                <div class="formula">
+                    <strong>Step 1:</strong> g(x) = x² → g'(x) = 2x<br>
+                    <strong>Step 2:</strong> f(u) = sin(u) → f'(u) = cos(u)<br>
+                    <strong>Chain Rule:</strong> f'(g(x)) × g'(x) = cos(x²) × 2x
+                </div>
+                
+                <div class="formula">
+                    <strong>Final Result:</strong> 2x·cos(x²)
+                </div>
+                
+                <div id="chainRulePlot" class="plot-container"></div>
+            </div>
+
+            <!-- Neural Network Architecture -->
+            <div class="card">
+                <h2>🧠 Neural Network Architecture</h2>
+                
+                <div class="neural-network">
+                    <div class="layer">
+                        <h4>Input</h4>
+                        <div class="neuron">0.8</div>
+                    </div>
+                    
+                    <div class="connection"></div>
+                    
+                    <div class="layer">
+                        <h4>Hidden Layer</h4>
+                        <div class="neuron">0.55</div>
+                        <div class="neuron">0.49</div>
+                    </div>
+                    
+                    <div class="connection"></div>
+                    
+                    <div class="layer">
+                        <h4>Output</h4>
+                        <div class="neuron">0.63</div>
+                    </div>
+                </div>
+
+                <div class="values">
+                    <div class="value-item">
+                        <h4>Target</h4>
+                        <div class="number">0.2</div>
+                    </div>
+                    <div class="value-item">
+                        <h4>Prediction</h4>
+                        <div class="number">0.634</div>
+                    </div>
+                    <div class="value-item">
+                        <h4>Loss</h4>
+                        <div class="number">0.094</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forward Pass -->
+            <div class="card">
+                <h2>➡️ Forward Pass</h2>
+                
+                <div class="formula">
+                    <strong>Hidden Layer:</strong><br>
+                    z₁ = W₁ × x + b₁ = [0.199, -0.055]<br>
+                    a₁ = sigmoid(z₁) = [0.550, 0.486]
+                </div>
+                
+                <div class="formula">
+                    <strong>Output Layer:</strong><br>
+                    z₂ = W₂ × a₁ + b₂ = [0.548]<br>
+                    a₂ = sigmoid(z₂) = [0.634]
+                </div>
+                
+                <div class="formula">
+                    <strong>Loss Function:</strong><br>
+                    L = ½(a₂ - target)² = 0.094
+                </div>
+            </div>
+
+            <!-- Backward Pass -->
+            <div class="card">
+                <h2>⬅️ Backward Pass (Chain Rule)</h2>
+                
+                <div class="gradient-flow">
+                    <div class="gradient-step">
+                        <h4>∂L/∂a₂</h4>
+                        <div>0.434</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="gradient-step">
+                        <h4>∂L/∂z₂</h4>
+                        <div>0.101</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="gradient-step">
+                        <h4>∂L/∂W₂</h4>
+                        <div>[0.055, 0.049]</div>
+                    </div>
+                </div>
+                
+                <div class="gradient-flow">
+                    <div class="gradient-step">
+                        <h4>∂L/∂a₁</h4>
+                        <div>[0.033, 0.077]</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="gradient-step">
+                        <h4>∂L/∂z₁</h4>
+                        <div>[0.008, 0.019]</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="gradient-step">
+                        <h4>∂L/∂W₁</h4>
+                        <div>[0.006, 0.015]</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mathematical Insights -->
+            <div class="card">
+                <h2>📊 Mathematical Insights</h2>
+                
+                <div class="formula">
+                    <strong>Chain Rule Formula:</strong><br>
+                    ∂f/∂x = (∂f/∂g) × (∂g/∂x)
+                </div>
+                
+                <div class="formula">
+                    <strong>Gradient Descent Update:</strong><br>
+                    w_new = w_old - α × (∂L/∂w)
+                </div>
+                
+                <div class="formula">
+                    <strong>Learning Rate:</strong> α = 0.1<br>
+                    <strong>Activation:</strong> sigmoid(x) = 1/(1 + e^(-x))<br>
+                    <strong>Derivative:</strong> sigmoid'(x) = sigmoid(x) × (1 - sigmoid(x))
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="card">
+                <h2>📈 Performance Metrics</h2>
+                
+                <div id="performancePlot" class="plot-container"></div>
+                
+                <div class="values">
+                    <div class="value-item">
+                        <h4>Accuracy</h4>
+                        <div class="number">68%</div>
+                    </div>
+                    <div class="value-item">
+                        <h4>Convergence</h4>
+                        <div class="number">Fast</div>
+                    </div>
+                    <div class="value-item">
+                        <h4>Gradient Magnitude</h4>
+                        <div class="number">0.101</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-Time Metrics Section -->
+        <div class="realtime-metrics">
+            <h2><span class="live-indicator"></span>Live Training Metrics</h2>
+            
+            <div class="metrics-grid">
+                <div class="metric-card pulse">
+                    <h4>Current Loss</h4>
+                    <div class="metric-value" id="currentLoss">0.094</div>
+                    <div class="metric-change" id="lossChange">-0.012</div>
+                </div>
+                
+                <div class="metric-card pulse">
+                    <h4>Accuracy</h4>
+                    <div class="metric-value" id="currentAccuracy">68.5%</div>
+                    <div class="metric-change" id="accuracyChange">+2.3%</div>
+                </div>
+                
+                <div class="metric-card pulse">
+                    <h4>Learning Rate</h4>
+                    <div class="metric-value" id="learningRate">0.1</div>
+                    <div class="metric-change" id="lrChange">Adaptive</div>
+                </div>
+                
+                <div class="metric-card pulse">
+                    <h4>Gradient Norm</h4>
+                    <div class="metric-value" id="gradientNorm">0.101</div>
+                    <div class="metric-change" id="gradientChange">Stable</div>
+                </div>
+                
+                <div class="metric-card pulse">
+                    <h4>Epoch</h4>
+                    <div class="metric-value" id="currentEpoch">1</div>
+                    <div class="metric-change" id="epochChange">Training...</div>
+                </div>
+                
+                <div class="metric-card pulse">
+                    <h4>Training Time</h4>
+                    <div class="metric-value" id="trainingTime">0:00</div>
+                    <div class="metric-change" id="timeChange">Elapsed</div>
+                </div>
+            </div>
+            
+            <div class="gradient-animation" style="padding: 20px; border-radius: 10px; margin-top: 20px;">
+                <h3>🔄 Gradient Flow Animation</h3>
+                <div id="gradientFlowAnimation" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div class="neuron" style="background: #ff6b6b;">∂L/∂a₂</div>
+                        <div style="color: white; font-size: 1.5rem;">→</div>
+                        <div class="neuron" style="background: #4ecdc4;">∂L/∂z₂</div>
+                        <div style="color: white; font-size: 1.5rem;">→</div>
+                        <div class="neuron" style="background: #45b7d1;">∂L/∂W₂</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>🎉 Key Takeaways</h2>
+            <p>The <span class="highlight">chain rule</span> is the mathematical foundation that enables neural networks to learn from their mistakes.</p>
+            <p>By calculating <span class="highlight">partial derivatives</span> and propagating gradients backward through the network, we can optimize every weight to minimize the loss function.</p>
+            <p>This process, called <span class="highlight">backpropagation</span>, is what powers all modern AI learning algorithms.</p>
+            <p><strong>Tomorrow:</strong> We'll implement gradient descent to put these concepts into practice!</p>
+        </div>
+    </div>
+
+    <script>
+        // Chain Rule Visualization
+        const x = [];
+        const y = [];
+        const derivative = [];
+        
+        for (let i = -3; i <= 3; i += 0.1) {
+            x.push(i);
+            y.push(Math.sin(i * i));
+            derivative.push(2 * i * Math.cos(i * i));
+        }
+        
+        const chainRuleTrace1 = {
+            x: x,
+            y: y,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'f(x) = sin(x²)',
+            line: { color: '#667eea', width: 3 }
+        };
+        
+        const chainRuleTrace2 = {
+            x: x,
+            y: derivative,
+            type: 'scatter',
+            mode: 'lines',
+            name: "f'(x) = 2x·cos(x²)",
+            line: { color: '#ff6b6b', width: 3 },
+            yaxis: 'y2'
+        };
+        
+        Plotly.newPlot('chainRulePlot', [chainRuleTrace1, chainRuleTrace2], {
+            title: 'Chain Rule: Function and its Derivative',
+            xaxis: { title: 'x' },
+            yaxis: { title: 'f(x)', side: 'left' },
+            yaxis2: { title: "f'(x)", side: 'right', overlaying: 'y' },
+            margin: { t: 50, b: 50, l: 50, r: 50 }
+        });
+
+        // Performance Metrics Visualization
+        const epochs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        const loss = [0.094, 0.082, 0.071, 0.061, 0.052, 0.044, 0.037, 0.031, 0.026, 0.022];
+        const accuracy = [0.68, 0.72, 0.75, 0.78, 0.81, 0.83, 0.85, 0.87, 0.88, 0.89];
+        
+        const performanceTrace1 = {
+            x: epochs,
+            y: loss,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Loss',
+            line: { color: '#ff6b6b', width: 3 },
+            yaxis: 'y'
+        };
+        
+        const performanceTrace2 = {
+            x: epochs,
+            y: accuracy,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Accuracy',
+            line: { color: '#4ecdc4', width: 3 },
+            yaxis: 'y2'
+        };
+        
+        Plotly.newPlot('performancePlot', [performanceTrace1, performanceTrace2], {
+            title: 'Training Progress',
+            xaxis: { title: 'Epochs' },
+            yaxis: { title: 'Loss', side: 'left' },
+            yaxis2: { title: 'Accuracy', side: 'right', overlaying: 'y' },
+            margin: { t: 50, b: 50, l: 50, r: 50 }
+        });
+
+        // Real-Time Metrics Simulation
+        let currentEpoch = 1;
+        let currentLoss = 0.094;
+        let currentAccuracy = 0.685;
+        let startTime = Date.now();
+        let isTraining = true;
+
+        // Simulate neural network training
+        function updateMetrics() {
+            if (!isTraining) return;
+
+            // Simulate training progress
+            currentEpoch++;
+            currentLoss = Math.max(0.001, currentLoss * (0.95 + Math.random() * 0.05));
+            currentAccuracy = Math.min(0.99, currentAccuracy + (Math.random() * 0.02));
+
+            // Update loss
+            document.getElementById('currentLoss').textContent = currentLoss.toFixed(4);
+            const lossChange = (currentLoss - 0.094).toFixed(4);
+            document.getElementById('lossChange').textContent = 
+                lossChange >= 0 ? `+${lossChange}` : lossChange;
+
+            // Update accuracy
+            document.getElementById('currentAccuracy').textContent = 
+                (currentAccuracy * 100).toFixed(1) + '%';
+            const accuracyChange = ((currentAccuracy - 0.685) * 100).toFixed(1);
+            document.getElementById('accuracyChange').textContent = 
+                accuracyChange >= 0 ? `+${accuracyChange}%` : `${accuracyChange}%`;
+
+            // Update epoch
+            document.getElementById('currentEpoch').textContent = currentEpoch;
+            document.getElementById('epochChange').textContent = 
+                currentEpoch < 10 ? 'Training...' : 'Converged!';
+
+            // Update training time
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('trainingTime').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Update gradient norm (simulate stability)
+            const gradientNorm = (0.101 * (0.9 + Math.random() * 0.2)).toFixed(3);
+            document.getElementById('gradientNorm').textContent = gradientNorm;
+            document.getElementById('gradientChange').textContent = 
+                Math.random() > 0.5 ? 'Stable' : 'Fluctuating';
+
+            // Update learning rate (adaptive)
+            const lr = (0.1 * (0.8 + Math.random() * 0.4)).toFixed(3);
+            document.getElementById('learningRate').textContent = lr;
+
+            // Stop training after 20 epochs
+            if (currentEpoch >= 20) {
+                isTraining = false;
+                document.getElementById('epochChange').textContent = 'Training Complete!';
+            }
+        }
+
+        // Update metrics every 2 seconds
+        setInterval(updateMetrics, 2000);
+
+        // Animate gradient flow
+        function animateGradientFlow() {
+            const neurons = document.querySelectorAll('#gradientFlowAnimation .neuron');
+            neurons.forEach((neuron, index) => {
+                setTimeout(() => {
+                    neuron.style.transform = 'scale(1.2)';
+                    neuron.style.boxShadow = '0 0 20px rgba(255,255,255,0.5)';
+                    setTimeout(() => {
+                        neuron.style.transform = 'scale(1)';
+                        neuron.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+                    }, 300);
+                }, index * 200);
+            });
+        }
+
+        // Animate gradient flow every 3 seconds
+        setInterval(animateGradientFlow, 3000);
+
+        // Add click to start/stop training
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.realtime-metrics')) {
+                if (isTraining) {
+                    isTraining = false;
+                    document.getElementById('epochChange').textContent = 'Paused';
+                } else {
+                    isTraining = true;
+                    document.getElementById('epochChange').textContent = 'Resumed';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
