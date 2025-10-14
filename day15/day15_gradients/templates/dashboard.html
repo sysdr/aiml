@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Gradient Descent Interactive Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-chart-line"></i> Gradient Descent Dashboard
+            </span>
+            <span class="navbar-text">
+                Day 15: Understanding How AI Systems Learn
+            </span>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Control Panel -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-gradient">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-sliders-h"></i> Control Panel
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Learning Rate Control -->
+                        <div class="mb-4">
+                            <label for="learningRate" class="form-label">
+                                <i class="fas fa-tachometer-alt"></i> Learning Rate
+                            </label>
+                            <input type="range" class="form-range" id="learningRate" 
+                                   min="0.0000001" max="0.001" step="0.0000001" value="0.000001">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">0.0000001</small>
+                                <small class="text-muted" id="learningRateValue">0.000001</small>
+                                <small class="text-muted">0.001</small>
+                            </div>
+                        </div>
+
+                        <!-- Epochs Control -->
+                        <div class="mb-4">
+                            <label for="epochs" class="form-label">
+                                <i class="fas fa-repeat"></i> Training Epochs
+                            </label>
+                            <input type="range" class="form-range" id="epochs" 
+                                   min="10" max="500" step="10" value="100">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">10</small>
+                                <small class="text-muted" id="epochsValue">100</small>
+                                <small class="text-muted">500</small>
+                            </div>
+                        </div>
+
+                        <!-- Initial Weight -->
+                        <div class="mb-4">
+                            <label for="initialWeight" class="form-label">
+                                <i class="fas fa-weight"></i> Initial Weight
+                            </label>
+                            <input type="range" class="form-range" id="initialWeight" 
+                                   min="-1" max="1" step="0.1" value="0.1">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">-1.0</small>
+                                <small class="text-muted" id="initialWeightValue">0.1</small>
+                                <small class="text-muted">1.0</small>
+                            </div>
+                        </div>
+
+                        <!-- Initial Bias -->
+                        <div class="mb-4">
+                            <label for="initialBias" class="form-label">
+                                <i class="fas fa-balance-scale"></i> Initial Bias
+                            </label>
+                            <input type="range" class="form-range" id="initialBias" 
+                                   min="-100000" max="100000" step="10000" value="0">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">-$100k</small>
+                                <small class="text-muted" id="initialBiasValue">$0</small>
+                                <small class="text-muted">$100k</small>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success" id="trainBtn">
+                                <i class="fas fa-play"></i> Train Model
+                            </button>
+                            <button class="btn btn-info" id="updatePlotBtn">
+                                <i class="fas fa-chart-line"></i> Update Plot
+                            </button>
+                            <button class="btn btn-warning" id="resetBtn">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Info -->
+                <div class="card shadow-sm mt-3">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-info-circle"></i> Model Information
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Weight:</strong><br>
+                                <span id="currentWeight" class="text-primary">0.1</span>
+                            </div>
+                            <div class="col-6">
+                                <strong>Bias:</strong><br>
+                                <span id="currentBias" class="text-primary">$0</span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <strong>Model Formula:</strong><br>
+                                <code id="modelFormula">Price = 0.1 × Size + $0</code>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <strong>Final Loss:</strong><br>
+                                <span id="finalLoss" class="text-success">Not trained</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization Area -->
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-gradient">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-area"></i> Interactive Visualization
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="plotContainer" class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading visualization...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Training Progress -->
+                <div class="card shadow-sm mt-3" id="trainingProgress" style="display: none;">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-cogs"></i> Training Progress
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress mb-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%" id="progressBar"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Epoch:</strong> <span id="currentEpoch">0</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Loss:</strong> <span id="currentLoss">0</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Weight:</strong> <span id="currentWeightProgress">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Training History Chart -->
+                <div class="card shadow-sm mt-3" id="historyChart" style="display: none;">
+                    <div class="card-header bg-secondary text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-history"></i> Training History
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="historyCanvas" width="800" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Panel -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-lightbulb"></i> Key Concepts
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="fas fa-arrow-down fa-2x text-danger mb-2"></i>
+                                    <h6>Gradient Descent</h6>
+                                    <p class="small">Algorithm that minimizes loss by following the steepest descent</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="fas fa-tachometer-alt fa-2x text-warning mb-2"></i>
+                                    <h6>Learning Rate</h6>
+                                    <p class="small">Controls how big steps we take toward the minimum</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
+                                    <h6>Loss Function</h6>
+                                    <p class="small">Measures how wrong our predictions are</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="fas fa-brain fa-2x text-info mb-2"></i>
+                                    <h6>AI Learning</h6>
+                                    <p class="small">Same algorithm powers ChatGPT and other AI systems</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
