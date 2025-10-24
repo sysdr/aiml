@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability Dashboard - Day 23</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #3b82f6 50%, #60a5fa 75%, #93c5fd 100%);
+            min-height: 100vh;
+            color: #1f2937;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 0.01em;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.3);
+        }
+
+        .card h2 {
+            color: #1f2937;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 1.4rem;
+            letter-spacing: -0.01em;
+        }
+
+        .card h2 i {
+            color: #3b82f6;
+            font-size: 1.3rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.01em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            font-weight: 400;
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .email-input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .classification-result {
+            background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .classification-result.spam {
+            border-left-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        }
+
+        .classification-result h4 {
+            color: #1f2937;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .classification-result p {
+            margin-bottom: 10px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .classification-result strong {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .history-item {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #3b82f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .history-item.spam {
+            border-left-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        }
+
+        .history-item.ham {
+            border-left-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+        }
+
+        .history-item strong {
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .history-item p {
+            color: #374151;
+            margin: 8px 0;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, #e5e7eb, #f3f4f6);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .confidence-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .confidence-fill.spam {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+        }
+
+        .status-running {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            animation: pulse 2s infinite;
+        }
+
+        .status-stopped {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+        }
+
+        @keyframes pulse {
+            0% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.7; 
+                transform: scale(1.1);
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .connection-status.connected {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .connection-status.disconnected {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">
+        <i class="fas fa-circle"></i> Connecting...
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> Probability Dashboard</h1>
+            <p>Real-time visualization of AI probability concepts - Day 23</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Coin Flip Simulation -->
+            <div class="card">
+                <h2><i class="fas fa-coins"></i> Coin Flip Simulation</h2>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="startCoinSimulation()">
+                        <i class="fas fa-play"></i> Start Simulation
+                    </button>
+                    <button class="btn btn-danger" onclick="stopCoinSimulation()">
+                        <i class="fas fa-stop"></i> Stop Simulation
+                    </button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="coinHeads">0</div>
+                        <div class="stat-label">Heads</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="coinTails">0</div>
+                        <div class="stat-label">Tails</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="coinTotal">0</div>
+                        <div class="stat-label">Total Flips</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="coinProb">0.000</div>
+                        <div class="stat-label">P(Heads)</div>
+                    </div>
+                </div>
+
+                <div class="chart-container" id="coinChart"></div>
+            </div>
+
+            <!-- Die Roll Simulation -->
+            <div class="card">
+                <h2><i class="fas fa-dice"></i> Die Roll Simulation</h2>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="startDieSimulation()">
+                        <i class="fas fa-play"></i> Start Simulation
+                    </button>
+                    <button class="btn btn-danger" onclick="stopDieSimulation()">
+                        <i class="fas fa-stop"></i> Stop Simulation
+                    </button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="dieTotal">0</div>
+                        <div class="stat-label">Total Rolls</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="dieExpected">0.167</div>
+                        <div class="stat-label">Expected P</div>
+                    </div>
+                </div>
+
+                <div class="chart-container" id="dieChart"></div>
+            </div>
+
+            <!-- Spam Classifier -->
+            <div class="card full-width">
+                <h2><i class="fas fa-envelope"></i> Spam Email Classifier</h2>
+                
+                <div class="controls">
+                    <input type="text" class="email-input" id="emailInput" 
+                           placeholder="Enter email text to classify..." 
+                           onkeypress="handleEmailKeyPress(event)">
+                    <button class="btn btn-success" onclick="classifyEmail()">
+                        <i class="fas fa-search"></i> Classify Email
+                    </button>
+                </div>
+
+                <div id="classificationResult"></div>
+
+                <h3><i class="fas fa-history"></i> Classification History</h3>
+                <div id="classificationHistory"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Socket.IO connection
+        const socket = io();
+        
+        // Connection status
+        socket.on('connect', function() {
+            document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> Connected';
+            document.getElementById('connectionStatus').className = 'connection-status connected';
+        });
+
+        socket.on('disconnect', function() {
+            document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> Disconnected';
+            document.getElementById('connectionStatus').className = 'connection-status disconnected';
+        });
+
+        // Coin flip simulation
+        function startCoinSimulation() {
+            socket.emit('start_coin_simulation');
+        }
+
+        function stopCoinSimulation() {
+            socket.emit('stop_coin_simulation');
+        }
+
+        socket.on('coin_update', function(data) {
+            document.getElementById('coinHeads').textContent = data.heads;
+            document.getElementById('coinTails').textContent = data.tails;
+            document.getElementById('coinTotal').textContent = data.total;
+            document.getElementById('coinProb').textContent = data.heads_probability.toFixed(3);
+            
+            updateCoinChart(data);
+        });
+
+        function updateCoinChart(data) {
+            const trace = {
+                x: ['Heads', 'Tails'],
+                y: [data.heads_probability, data.tails_probability],
+                type: 'bar',
+                marker: {
+                    color: ['#38a169', '#e53e3e']
+                }
+            };
+
+            const layout = {
+                title: 'Coin Flip Probabilities',
+                yaxis: { title: 'Probability', range: [0, 1] },
+                xaxis: { title: 'Outcome' },
+                showlegend: false
+            };
+
+            Plotly.newPlot('coinChart', [trace], layout, {responsive: true});
+        }
+
+        // Die roll simulation
+        function startDieSimulation() {
+            socket.emit('start_die_simulation');
+        }
+
+        function stopDieSimulation() {
+            socket.emit('stop_die_simulation');
+        }
+
+        socket.on('die_update', function(data) {
+            document.getElementById('dieTotal').textContent = data.total;
+            
+            updateDieChart(data);
+        });
+
+        function updateDieChart(data) {
+            const outcomes = Object.keys(data.probabilities).map(Number).sort();
+            const probabilities = outcomes.map(outcome => data.probabilities[outcome]);
+            const theoretical = outcomes.map(() => data.theoretical_probability);
+
+            const trace1 = {
+                x: outcomes,
+                y: probabilities,
+                type: 'bar',
+                name: 'Observed',
+                marker: { color: '#667eea' }
+            };
+
+            const trace2 = {
+                x: outcomes,
+                y: theoretical,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Theoretical',
+                line: { color: '#e53e3e', dash: 'dash' },
+                marker: { color: '#e53e3e' }
+            };
+
+            const layout = {
+                title: 'Die Roll Distribution',
+                xaxis: { title: 'Outcome' },
+                yaxis: { title: 'Probability' },
+                showlegend: true
+            };
+
+            Plotly.newPlot('dieChart', [trace1, trace2], layout, {responsive: true});
+        }
+
+        // Spam classifier
+        function classifyEmail() {
+            const emailText = document.getElementById('emailInput').value.trim();
+            if (!emailText) return;
+
+            socket.emit('classify_email', { email: emailText });
+            document.getElementById('emailInput').value = '';
+        }
+
+        function handleEmailKeyPress(event) {
+            if (event.key === 'Enter') {
+                classifyEmail();
+            }
+        }
+
+        socket.on('classification_result', function(result) {
+            displayClassificationResult(result);
+            updateClassificationHistory();
+        });
+
+        function displayClassificationResult(result) {
+            const resultDiv = document.getElementById('classificationResult');
+            const isSpam = result.classification === 'SPAM';
+            
+            resultDiv.innerHTML = `
+                <div class="classification-result ${isSpam ? 'spam' : ''}">
+                    <h4><i class="fas fa-envelope"></i> Classification Result</h4>
+                    <p><strong>Text:</strong> "${result.text}"</p>
+                    <p><strong>Classification:</strong> ${result.classification}</p>
+                    <p><strong>Confidence:</strong> ${(result.confidence * 100).toFixed(1)}%</p>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill ${isSpam ? 'spam' : ''}" 
+                             style="width: ${result.confidence * 100}%"></div>
+                    </div>
+                    <p><strong>P(Spam):</strong> ${result.spam_probability.toFixed(3)}</p>
+                    <p><strong>P(Ham):</strong> ${result.ham_probability.toFixed(3)}</p>
+                </div>
+            `;
+        }
+
+        socket.on('classification_history', function(history) {
+            displayClassificationHistory(history);
+        });
+
+        function updateClassificationHistory() {
+            socket.emit('get_classification_history');
+        }
+
+        function displayClassificationHistory(history) {
+            const historyDiv = document.getElementById('classificationHistory');
+            
+            if (history.length === 0) {
+                historyDiv.innerHTML = '<p>No classifications yet. Try classifying an email!</p>';
+                return;
+            }
+
+            historyDiv.innerHTML = history.map(item => {
+                const isSpam = item.classification === 'SPAM';
+                const timestamp = new Date(item.timestamp * 1000).toLocaleTimeString();
+                
+                return `
+                    <div class="history-item ${isSpam ? 'spam' : 'ham'}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong>${item.classification}</strong>
+                            <span style="font-size: 0.8rem; color: #666;">${timestamp}</span>
+                        </div>
+                        <p style="margin: 5px 0;">"${item.text}"</p>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill ${isSpam ? 'spam' : ''}" 
+                                 style="width: ${item.confidence * 100}%"></div>
+                        </div>
+                        <p style="font-size: 0.9rem; color: #666;">
+                            P(Spam): ${item.spam_probability.toFixed(3)} | 
+                            P(Ham): ${item.ham_probability.toFixed(3)}
+                        </p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize charts
+        socket.on('connect', function() {
+            updateCoinChart({
+                heads_probability: 0.5,
+                tails_probability: 0.5
+            });
+            
+            updateDieChart({
+                probabilities: {1: 1/6, 2: 1/6, 3: 1/6, 4: 1/6, 5: 1/6, 6: 1/6},
+                theoretical_probability: 1/6
+            });
+            
+            updateClassificationHistory();
+        });
+    </script>
+</body>
+</html>
