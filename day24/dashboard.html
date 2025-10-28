@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 24: Conditional Probability & Bayes' Theorem - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #00ffa6;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 255, 166, 0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            color: #a0a0a0;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .metric-card.conversion {
+            border-left-color: #00ffa6;
+        }
+
+        .metric-card.spam {
+            border-left-color: #ff4444;
+        }
+
+        .metric-card.medical {
+            border-left-color: #ffaa00;
+        }
+
+        .metric-card.fraud {
+            border-left-color: #ff8800;
+        }
+
+        .metric-card h3 {
+            color: #00ffa6;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            color: #888;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section {
+            background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .section h2 {
+            color: #00ffa6;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #00ffa6;
+            padding-bottom: 10px;
+        }
+
+        .email-results {
+            margin-top: 20px;
+        }
+
+        .email-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 3px solid;
+        }
+
+        .email-item.spam {
+            border-left-color: #ff4444;
+        }
+
+        .email-item.legit {
+            border-left-color: #00ffa6;
+        }
+
+        .email-subject {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .email-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #00ffa6;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .visualization {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .visualization img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+
+        .indicator.positive {
+            background: #00ffa6;
+            color: #000;
+        }
+
+        .indicator.negative {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 25px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .progress-green {
+            background: linear-gradient(90deg, #00ffa6, #00cc85);
+        }
+
+        .progress-red {
+            background: linear-gradient(90deg, #ff4444, #cc3333);
+        }
+
+        .progress-orange {
+            background: linear-gradient(90deg, #ff8800, #cc6600);
+        }
+
+        .progress-yellow {
+            background: linear-gradient(90deg, #ffaa00, #cc8800);
+        }
+
+        .test-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .test-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #00ffa6;
+        }
+
+        .test-card h4 {
+            color: #00ffa6;
+            margin-bottom: 10px;
+        }
+
+        .test-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: #00ffa6;
+            color: #000;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            margin-top: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .metric-card, .section {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Conditional Probability & Bayes' Theorem</h1>
+            <p>Real-World AI Applications Dashboard | Day 24</p>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card conversion">
+                <h3>📊 E-commerce Conversion</h3>
+                <div class="metric-value" style="color: #00ffa6;">40.0%</div>
+                <div class="metric-label">Purchase Rate | Cart</div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-green" style="width: 40%;">40%</div>
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #aaa;">
+                    Users who added to cart and completed purchase
+                </p>
+            </div>
+
+            <div class="metric-card spam">
+                <h3>📧 Spam Detection</h3>
+                <div class="metric-value" style="color: #ff4444;">3/4</div>
+                <div class="metric-label">Spam Emails Detected</div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-red" style="width: 75%;">75%</div>
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #aaa;">
+                    Accuracy: 100% confidence on all classifications
+                </p>
+            </div>
+
+            <div class="metric-card medical">
+                <h3>🏥 Medical Diagnosis</h3>
+                <div class="metric-value" style="color: #ffaa00;">1.9%</div>
+                <div class="metric-label">Disease Probability</div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-yellow" style="width: 1.9%;">1.9%</div>
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #aaa;">
+                    Despite 99% test accuracy (base rate fallacy)
+                </p>
+            </div>
+
+            <div class="metric-card fraud">
+                <h3>🔍 Fraud Detection</h3>
+                <div class="metric-value" style="color: #ff8800;">24.8%</div>
+                <div class="metric-label">Fraud Probability</div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-orange" style="width: 24.8%;">24.8%</div>
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #aaa;">
+                    Bayesian belief updated with 4 pieces of evidence
+                </p>
+            </div>
+        </div>
+
+        <!-- Spam Filter Results -->
+        <div class="section">
+            <h2>📧 Email Classification Results</h2>
+            <div class="email-results">
+                <div class="email-item spam">
+                    <div class="email-subject">Urgent: Free Prize - Click to Win!</div>
+                    <div class="indicator negative">🚫 SPAM</div>
+                    <div class="email-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Spam Probability</div>
+                            <div class="stat-value" style="color: #ff4444;">100%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Confidence</div>
+                            <div class="stat-value" style="color: #ff4444;">100.0%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Change from Prior</div>
+                            <div class="stat-value" style="color: #ff4444;">+70.0%</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; color: #888; font-size: 0.9em;">
+                        Top indicators: 'prize' (90% spam), 'win' (75% spam), 'free' (80% spam)
+                    </div>
+                </div>
+
+                <div class="email-item legit">
+                    <div class="email-subject">Project Report - Review Deadline</div>
+                    <div class="indicator positive">✅ LEGITIMATE</div>
+                    <div class="email-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Spam Probability</div>
+                            <div class="stat-value" style="color: #00ffa6;">0%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Confidence</div>
+                            <div class="stat-value" style="color: #00ffa6;">100.0%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Change from Prior</div>
+                            <div class="stat-value" style="color: #00ffa6;">-30.0%</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; color: #888; font-size: 0.9em;">
+                        Top indicators: 'report' (75% ham), 'project' (80% ham), 'review' (65% ham)
+                    </div>
+                </div>
+
+                <div class="email-item legit">
+                    <div class="email-subject">Meeting Tomorrow - Report Attached</div>
+                    <div class="indicator positive">✅ LEGITIMATE</div>
+                    <div class="email-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Spam Probability</div>
+                            <div class="stat-value" style="color: #00ffa6;">0%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Confidence</div>
+                            <div class="stat-value" style="color: #00ffa6;">100.0%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Change from Prior</div>
+                            <div class="stat-value" style="color: #00ffa6;">-30.0%</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; color: #888; font-size: 0.9em;">
+                        Top indicators: 'report' (75% ham), 'meeting' (70% ham), 'attached' (70% ham)
+                    </div>
+                </div>
+
+                <div class="email-item spam">
+                    <div class="email-subject">Congratulations! Free Offer Inside</div>
+                    <div class="indicator negative">🚫 SPAM</div>
+                    <div class="email-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Spam Probability</div>
+                            <div class="stat-value" style="color: #ff4444;">99.7%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Confidence</div>
+                            <div class="stat-value" style="color: #ff4444;">99.7%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Change from Prior</div>
+                            <div class="stat-value" style="color: #ff4444;">+69.7%</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; color: #888; font-size: 0.9em;">
+                        Top indicators: 'free' (80% spam), 'congratulations' (80% spam), 'offer' (65% spam)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Diagnosis -->
+        <div class="section">
+            <h2>🏥 Medical AI Diagnosis Results</h2>
+            <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #ffaa00; margin-bottom: 15px;">Rare Genetic Disorder Analysis</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div class="stat-item">
+                        <div class="stat-label">Disease Prevalence</div>
+                        <div class="stat-value" style="color: #ffaa00;">0.1%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Test Sensitivity</div>
+                        <div class="stat-value" style="color: #ffaa00;">99.0%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Test Specificity</div>
+                        <div class="stat-value" style="color: #ffaa00;">95.0%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Actual Probability</div>
+                        <div class="stat-value" style="color: #00ffa6;">1.9%</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 170, 0, 0.1); border-radius: 8px; border-left: 4px solid #ffaa00;">
+                    <p style="color: #fff; line-height: 1.6;">
+                        <strong>💡 Base Rate Fallacy:</strong> Even with 99% test accuracy, the actual probability of disease is only 1.9% 
+                        because the disease is extremely rare (0.1% prevalence). This demonstrates why AI systems must consider 
+                        base rates in medical diagnosis and risk assessment.
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h4 style="color: #00ffa6; margin-bottom: 15px;">Test Quality Comparison</h4>
+                <div class="test-results">
+                    <div class="test-card">
+                        <h4>Basic Test</h4>
+                        <div class="test-status" style="background: #ff4444;">0.8% Probability</div>
+                        <div style="margin-top: 10px; color: #aaa; font-size: 0.9em;">
+                            Sensitivity: 80%<br>
+                            Specificity: 90%
+                        </div>
+                    </div>
+                    <div class="test-card">
+                        <h4>Good Test</h4>
+                        <div class="test-status" style="background: #ffaa00;">1.9% Probability</div>
+                        <div style="margin-top: 10px; color: #aaa; font-size: 0.9em;">
+                            Sensitivity: 95%<br>
+                            Specificity: 95%
+                        </div>
+                    </div>
+                    <div class="test-card">
+                        <h4>Excellent Test</h4>
+                        <div class="test-status" style="background: #00ffa6;">9.0% Probability</div>
+                        <div style="margin-top: 10px; color: #aaa; font-size: 0.9em;">
+                            Sensitivity: 99%<br>
+                            Specificity: 99%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization -->
+        <div class="section">
+            <h2>📊 Bayesian Belief Update Visualization</h2>
+            <div class="visualization">
+                <p style="color: #888; margin-bottom: 20px;">
+                    <strong>Fraud Detection:</strong> Watch how the AI updates its belief about fraud probability as new evidence arrives
+                </p>
+                <img src="fraud_detection_belief_update.png" alt="Bayesian Belief Update" style="max-width: 100%; height: auto;">
+                <p style="margin-top: 15px; color: #aaa; font-style: italic;">
+                    Starting from 5% prior probability, the system updates with: Unusual location → High amount → New merchant → Late night
+                </p>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="section">
+            <h2>🧪 Automated Test Results</h2>
+            <div style="text-align: center; padding: 30px;">
+                <div style="font-size: 3em; color: #00ffa6; margin-bottom: 15px;">14/14</div>
+                <div style="font-size: 1.5em; color: #00ffa6; margin-bottom: 20px;">All Tests Passed ✅</div>
+                <div class="test-results">
+                    <div class="test-card">
+                        <h4>Conditional Probability</h4>
+                        <div class="test-status">✓ 3 Tests</div>
+                    </div>
+                    <div class="test-card">
+                        <h4>Spam Filter</h4>
+                        <div class="test-status">✓ 5 Tests</div>
+                    </div>
+                    <div class="test-card">
+                        <h4>Medical Diagnosis</h4>
+                        <div class="test-status">✓ 4 Tests</div>
+                    </div>
+                    <div class="test-card">
+                        <h4>Bayesian Logic</h4>
+                        <div class="test-status">✓ 2 Tests</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Day 24: Conditional Probability and Bayes' Theorem | AI/ML Learning Series</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Generated on <span id="timestamp"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        // Set timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Add animation on load
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.metric-card, .email-item');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>
+
