@@ -1,0 +1,39 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Python
+venv/
+ENV/
+.env
+.python-version
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.py[cod]
+*.pyo
+*.egg-info/
+.coverage
+coverage.xml
+htmlcov/
+
+# Node / JS
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build artifacts
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Caches
+.cache/
+
+

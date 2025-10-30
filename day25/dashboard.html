@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 25 Dashboard — Probability Distributions in AI/ML</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a; /* slate-900 */
+            --panel: #111827; /* gray-900 */
+            --muted: #9ca3af; /* gray-400 */
+            --text: #f3f4f6; /* gray-100 */
+            --accent: #16a34a; /* green-600 */
+            --accent-2: #f59e0b; /* amber-500 */
+            --danger: #ef4444; /* red-500 */
+            --card: #0b1220; /* subtle dark */
+            --border: #1f2937; /* gray-800 */
+            --shadow: 0 10px 30px rgba(0,0,0,0.35);
+        }
+
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: radial-gradient(1200px 600px at 10% -10%, rgba(22,163,74,0.08), transparent 60%),
+                        radial-gradient(900px 500px at 110% 10%, rgba(245,158,11,0.08), transparent 60%),
+                        var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px 80px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .title {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .title h1 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 0.2px;
+        }
+        .title p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            appearance: none;
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.05));
+            color: var(--text);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+        .btn:active { transform: translateY(0); }
+        .btn-primary { border-color: rgba(22,163,74,0.4); background: linear-gradient(180deg, rgba(22,163,74,0.18), rgba(22,163,74,0.08)); }
+        .btn-warn { border-color: rgba(245,158,11,0.4); background: linear-gradient(180deg, rgba(245,158,11,0.18), rgba(245,158,11,0.08)); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .card {
+            grid-column: span 12;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.1)), var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+        .card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
+        .card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+        @media (min-width: 900px) {
+            .span-4 { grid-column: span 4; }
+            .span-6 { grid-column: span 6; }
+            .span-8 { grid-column: span 8; }
+            .span-12 { grid-column: span 12; }
+        }
+
+        .metric {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .metric .value { font-size: 28px; font-weight: 800; }
+        .metric .sub { color: var(--muted); font-size: 12px; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            padding: 6px 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .badge .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--accent); }
+        .badge.warn .dot { background: var(--accent-2); }
+        .badge.danger .dot { background: var(--danger); }
+
+        .viz {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #0a0f1a;
+        }
+        .viz img { width: 100%; display: block; }
+        .viz .fallback {
+            padding: 36px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .list {
+            display: grid;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+            padding: 12px 14px;
+            border-radius: 10px;
+        }
+        .list-item span { color: var(--muted); font-size: 13px; }
+        .list-item strong { color: var(--text); }
+
+        footer { margin-top: 32px; color: var(--muted); font-size: 12px; text-align: center; }
+        a { color: inherit; text-decoration: none; }
+        code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title">
+                <h1>Day 25 Dashboard</h1>
+                <p>Random Variables and Probability Distributions — Expected Outputs</p>
+            </div>
+            <div class="actions">
+                <button class="btn btn-warn" onclick="window.open('README.md', '_blank')">View README</button>
+                <button class="btn btn-primary" onclick="runInstructions()">Run Instructions</button>
+            </div>
+        </header>
+
+        <div class="grid">
+            <section class="card span-8">
+                <div class="badge"><span class="dot"></span> Visualization</div>
+                <h3>Comprehensive Distribution Visualization</h3>
+                <p>The output image generated by <code>lesson_code.py</code> summarizes Bernoulli, Binomial, Normal, CLT, calibration, and PMF vs PDF.</p>
+                <div class="viz" style="margin-top:12px;">
+                    <img id="viz-img" src="distributions_visualization.png" alt="Distributions Visualization" onerror="showFallback()">
+                    <div id="viz-fallback" class="fallback" style="display:none;">
+                        <strong>distributions_visualization.png</strong> not found yet.<br>
+                        Run <code>python lesson_code.py</code> to generate it.
+                    </div>
+                </div>
+            </section>
+
+            <section class="card span-4">
+                <div class="badge warn"><span class="dot"></span> Expected Artifacts</div>
+                <h3>Artifacts Produced</h3>
+                <div class="list">
+                    <div class="list-item"><span>Image</span><strong>distributions_visualization.png</strong></div>
+                    <div class="list-item"><span>Console</span><strong>Statistical summaries</strong></div>
+                    <div class="list-item"><span>Tests</span><strong>pytest reports</strong></div>
+                </div>
+                <div style="margin-top:14px;">
+                    <button class="btn" onclick="copyCmd('python lesson_code.py')">Copy: python lesson_code.py</button>
+                </div>
+            </section>
+
+            <section class="card span-4">
+                <div class="badge"><span class="dot"></span> Key Checks</div>
+                <h3>Statistical Expectations</h3>
+                <ul style="margin:8px 0 0 18px; color: var(--muted);">
+                    <li>Bernoulli: proportion ≈ <strong>p</strong></li>
+                    <li>Binomial: mean ≈ <strong>n·p</strong>, std ≈ <strong>√(n·p·(1−p))</strong></li>
+                    <li>Normal: mean ≈ <strong>μ</strong>, std ≈ <strong>σ</strong></li>
+                    <li>CLT: means of uniforms → <strong>Normal</strong></li>
+                    <li>Calibration: overconfident vs well-calibrated distributions</li>
+                </ul>
+            </section>
+
+            <section class="card span-8">
+                <div class="badge"><span class="dot"></span> How to Run</div>
+                <h3>Reproduce Outputs</h3>
+                <div class="list">
+                    <div class="list-item"><span>Setup environment</span><code>chmod +x env_setup.sh && ./env_setup.sh && source venv/bin/activate</code></div>
+                    <div class="list-item"><span>Generate outputs</span><code>python lesson_code.py</code></div>
+                    <div class="list-item"><span>Run tests</span><code>pytest test_lesson.py -v</code></div>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            Built for the 180‑Day AI/ML Course · Day 25 · Theme uses green & amber accents only
+        </footer>
+    </div>
+
+    <script>
+        function showFallback() {
+            const img = document.getElementById('viz-img');
+            const fb = document.getElementById('viz-fallback');
+            if (img) img.style.display = 'none';
+            if (fb) fb.style.display = 'block';
+        }
+        function copyCmd(cmd) {
+            navigator.clipboard.writeText(cmd).then(() => {
+                const original = document.activeElement && document.activeElement.textContent;
+                if (document.activeElement && document.activeElement.classList.contains('btn')) {
+                    document.activeElement.textContent = 'Copied!';
+                    setTimeout(() => { document.activeElement.textContent = original; }, 1200);
+                }
+            });
+        }
+        function runInstructions() {
+            alert('From your terminal:\n\n1) chmod +x env_setup.sh\n2) ./env_setup.sh\n3) source venv/bin/activate\n4) python lesson_code.py');
+        }
+    </script>
+</body>
+</html>
+
+
