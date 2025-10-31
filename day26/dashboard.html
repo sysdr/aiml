@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 26 Dashboard — Descriptive Statistics Metrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #111827;
+            --muted: #9ca3af;
+            --text: #f3f4f6;
+            --accent: #16a34a;
+            --accent-2: #f59e0b;
+            --danger: #ef4444;
+            --card: #0b1220;
+            --border: #1f2937;
+            --shadow: 0 10px 30px rgba(0,0,0,0.35);
+        }
+
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: radial-gradient(1200px 600px at 10% -10%, rgba(22,163,74,0.08), transparent 60%),
+                        radial-gradient(900px 500px at 110% 10%, rgba(245,158,11,0.08), transparent 60%),
+                        var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 20px 80px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .title {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .title h1 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 0.2px;
+        }
+        .title p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            appearance: none;
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.05));
+            color: var(--text);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+        .btn-primary { border-color: rgba(22,163,74,0.4); background: linear-gradient(180deg, rgba(22,163,74,0.18), rgba(22,163,74,0.08)); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .card {
+            grid-column: span 12;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.1)), var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+        .card h3 { margin: 0 0 16px; font-size: 18px; font-weight: 700; }
+        .card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+        @media (min-width: 900px) {
+            .span-3 { grid-column: span 3; }
+            .span-4 { grid-column: span 4; }
+            .span-6 { grid-column: span 6; }
+            .span-8 { grid-column: span 8; }
+            .span-12 { grid-column: span 12; }
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 12px;
+        }
+        .metric-label {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .metric-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        .metric-sub {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .scenario-card {
+            border-left: 3px solid var(--accent);
+            padding-left: 16px;
+            margin-top: 16px;
+        }
+        .scenario-card h4 {
+            margin: 0 0 8px;
+            font-size: 16px;
+            color: var(--text);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            padding: 6px 10px;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+        .badge .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--accent); }
+
+        footer { margin-top: 32px; color: var(--muted); font-size: 12px; text-align: center; }
+        code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title">
+                <h1>Day 26 Dashboard</h1>
+                <p>Descriptive Statistics — Real-Time Metrics & Demo Results</p>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="refreshMetrics()">🔄 Refresh Metrics</button>
+                <button id="run-demo-btn" class="btn" onclick="runDemo()">▶️ Run Demo</button>
+            </div>
+        </header>
+
+        <div class="grid">
+            <section class="card span-12">
+                <div class="badge"><span class="dot"></span> Live Metrics</div>
+                <h3>Overview Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Scenarios</div>
+                        <div class="stat-value" id="total-scenarios">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Data Points</div>
+                        <div class="stat-value" id="total-datapoints">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Outliers Detected</div>
+                        <div class="stat-value" id="total-outliers">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Skewed Distributions</div>
+                        <div class="stat-value" id="total-skewed">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card span-6" id="scenario-1">
+                <h3>📱 Scenario 1: User Session Duration</h3>
+                <div class="scenario-card">
+                    <h4>Statistics</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Mean</div>
+                            <div class="stat-value" id="s1-mean">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Median</div>
+                            <div class="stat-value" id="s1-median">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Mode</div>
+                            <div class="stat-value" id="s1-mode">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Skew Type</div>
+                            <div class="stat-value" id="s1-skew" style="font-size: 14px;">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Outliers</div>
+                            <div class="stat-value" id="s1-outliers">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Count</div>
+                            <div class="stat-value" id="s1-count">0</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card span-6" id="scenario-2">
+                <h3>💳 Scenario 2: Transaction Amounts</h3>
+                <div class="scenario-card">
+                    <h4>Statistics</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Mean</div>
+                            <div class="stat-value" id="s2-mean">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Median</div>
+                            <div class="stat-value" id="s2-median">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Mode</div>
+                            <div class="stat-value" id="s2-mode">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Skew Type</div>
+                            <div class="stat-value" id="s2-skew" style="font-size: 14px;">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Outliers</div>
+                            <div class="stat-value" id="s2-outliers">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Count</div>
+                            <div class="stat-value" id="s2-count">0</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card span-6" id="scenario-3">
+                <h3>⚡ Scenario 3: AI Model Latency</h3>
+                <div class="scenario-card">
+                    <h4>Statistics</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Mean</div>
+                            <div class="stat-value" id="s3-mean">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Median</div>
+                            <div class="stat-value" id="s3-median">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Mode</div>
+                            <div class="stat-value" id="s3-mode">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Skew Type</div>
+                            <div class="stat-value" id="s3-skew" style="font-size: 14px;">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Outliers</div>
+                            <div class="stat-value" id="s3-outliers">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Count</div>
+                            <div class="stat-value" id="s3-count">0</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card span-6">
+                <div class="badge"><span class="dot"></span> Status</div>
+                <h3>System Status</h3>
+                <div class="metric">
+                    <div class="metric-label">Last Update</div>
+                    <div class="metric-value" id="last-update" style="font-size: 18px;">Never</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Demo Status</div>
+                    <div class="metric-value" id="demo-status" style="font-size: 18px; color: var(--muted);">Not Run</div>
+                </div>
+                <div style="margin-top: 16px;">
+                    <button class="btn btn-primary" onclick="refreshMetrics()" style="width: 100%;">🔄 Refresh Now</button>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            Built for the 180‑Day AI/ML Course · Day 26 · Descriptive Statistics Dashboard
+        </footer>
+    </div>
+
+    <script>
+        function updateMetrics(data) {
+            console.log('Updating metrics with data:', data);
+            
+            if (!data) {
+                console.error('No data provided to updateMetrics');
+                return;
+            }
+            
+            try {
+                // Overview metrics
+                const totalScenariosEl = document.getElementById('total-scenarios');
+                const totalDatapointsEl = document.getElementById('total-datapoints');
+                const totalOutliersEl = document.getElementById('total-outliers');
+                const totalSkewedEl = document.getElementById('total-skewed');
+                
+                if (totalScenariosEl) totalScenariosEl.textContent = data.total_scenarios || 3;
+                if (totalDatapointsEl) totalDatapointsEl.textContent = data.total_datapoints || 0;
+                if (totalOutliersEl) totalOutliersEl.textContent = data.total_outliers || 0;
+                if (totalSkewedEl) totalSkewedEl.textContent = data.total_skewed || 0;
+
+                // Scenario 1
+                if (data.scenario1) {
+                    const s1Mean = document.getElementById('s1-mean');
+                    const s1Median = document.getElementById('s1-median');
+                    const s1Mode = document.getElementById('s1-mode');
+                    const s1Skew = document.getElementById('s1-skew');
+                    const s1Outliers = document.getElementById('s1-outliers');
+                    const s1Count = document.getElementById('s1-count');
+                    
+                    if (s1Mean) {
+                        s1Mean.textContent = data.scenario1.mean !== undefined ? data.scenario1.mean : 0;
+                        console.log('Setting s1-mean to:', data.scenario1.mean);
+                    }
+                    if (s1Median) {
+                        s1Median.textContent = data.scenario1.median !== undefined ? data.scenario1.median : 0;
+                        console.log('Setting s1-median to:', data.scenario1.median);
+                    }
+                    if (s1Mode) {
+                        s1Mode.textContent = data.scenario1.mode || '-';
+                        console.log('Setting s1-mode to:', data.scenario1.mode);
+                    }
+                    if (s1Skew) {
+                        s1Skew.textContent = data.scenario1.skew_type || '-';
+                        console.log('Setting s1-skew to:', data.scenario1.skew_type);
+                    }
+                    if (s1Outliers) {
+                        s1Outliers.textContent = data.scenario1.outliers !== undefined ? data.scenario1.outliers : 0;
+                        console.log('Setting s1-outliers to:', data.scenario1.outliers);
+                    }
+                    if (s1Count) {
+                        s1Count.textContent = data.scenario1.count !== undefined ? data.scenario1.count : 0;
+                        console.log('Setting s1-count to:', data.scenario1.count);
+                    }
+                    
+                    console.log('Updated Scenario 1:', data.scenario1);
+                } else {
+                    console.warn('No scenario1 data in response');
+                }
+
+                // Scenario 2
+                if (data.scenario2) {
+                    const s2Mean = document.getElementById('s2-mean');
+                    const s2Median = document.getElementById('s2-median');
+                    const s2Mode = document.getElementById('s2-mode');
+                    const s2Skew = document.getElementById('s2-skew');
+                    const s2Outliers = document.getElementById('s2-outliers');
+                    const s2Count = document.getElementById('s2-count');
+                    
+                    if (s2Mean) {
+                        s2Mean.textContent = data.scenario2.mean !== undefined ? data.scenario2.mean : 0;
+                        console.log('Setting s2-mean to:', data.scenario2.mean);
+                    }
+                    if (s2Median) {
+                        s2Median.textContent = data.scenario2.median !== undefined ? data.scenario2.median : 0;
+                        console.log('Setting s2-median to:', data.scenario2.median);
+                    }
+                    if (s2Mode) {
+                        s2Mode.textContent = data.scenario2.mode || '-';
+                        console.log('Setting s2-mode to:', data.scenario2.mode);
+                    }
+                    if (s2Skew) {
+                        s2Skew.textContent = data.scenario2.skew_type || '-';
+                        console.log('Setting s2-skew to:', data.scenario2.skew_type);
+                    }
+                    if (s2Outliers) {
+                        s2Outliers.textContent = data.scenario2.outliers !== undefined ? data.scenario2.outliers : 0;
+                        console.log('Setting s2-outliers to:', data.scenario2.outliers);
+                    }
+                    if (s2Count) {
+                        s2Count.textContent = data.scenario2.count !== undefined ? data.scenario2.count : 0;
+                        console.log('Setting s2-count to:', data.scenario2.count);
+                    }
+                    
+                    console.log('Updated Scenario 2:', data.scenario2);
+                } else {
+                    console.warn('No scenario2 data in response');
+                }
+
+                // Scenario 3
+                if (data.scenario3) {
+                    const s3Mean = document.getElementById('s3-mean');
+                    const s3Median = document.getElementById('s3-median');
+                    const s3Mode = document.getElementById('s3-mode');
+                    const s3Skew = document.getElementById('s3-skew');
+                    const s3Outliers = document.getElementById('s3-outliers');
+                    const s3Count = document.getElementById('s3-count');
+                    
+                    if (s3Mean) {
+                        s3Mean.textContent = data.scenario3.mean !== undefined ? data.scenario3.mean : 0;
+                        console.log('Setting s3-mean to:', data.scenario3.mean);
+                    }
+                    if (s3Median) {
+                        s3Median.textContent = data.scenario3.median !== undefined ? data.scenario3.median : 0;
+                        console.log('Setting s3-median to:', data.scenario3.median);
+                    }
+                    if (s3Mode) {
+                        s3Mode.textContent = data.scenario3.mode || '-';
+                        console.log('Setting s3-mode to:', data.scenario3.mode);
+                    }
+                    if (s3Skew) {
+                        s3Skew.textContent = data.scenario3.skew_type || '-';
+                        console.log('Setting s3-skew to:', data.scenario3.skew_type);
+                    }
+                    if (s3Outliers) {
+                        s3Outliers.textContent = data.scenario3.outliers !== undefined ? data.scenario3.outliers : 0;
+                        console.log('Setting s3-outliers to:', data.scenario3.outliers);
+                    }
+                    if (s3Count) {
+                        s3Count.textContent = data.scenario3.count !== undefined ? data.scenario3.count : 0;
+                        console.log('Setting s3-count to:', data.scenario3.count);
+                    }
+                    
+                    console.log('Updated Scenario 3:', data.scenario3);
+                } else {
+                    console.warn('No scenario3 data in response');
+                }
+
+                // Status - Update last
+                const lastUpdateEl = document.getElementById('last-update');
+                const demoStatusEl = document.getElementById('demo-status');
+                
+                if (lastUpdateEl) {
+                    lastUpdateEl.textContent = new Date().toLocaleTimeString();
+                }
+                
+                if (demoStatusEl) {
+                    demoStatusEl.textContent = data.demo_status || 'Not Run';
+                    demoStatusEl.style.color = (data.demo_status === 'Running' || data.demo_status === '✅ Completed') ? 'var(--accent)' : 'var(--muted)';
+                }
+                
+                console.log('✅ Metrics update completed');
+            } catch (error) {
+                console.error('Error updating metrics:', error);
+                alert('Error updating dashboard: ' + error.message);
+            }
+        }
+
+        function refreshMetrics() {
+            console.log('Refreshing metrics...');
+            fetch('/api/metrics')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Metrics received:', data);
+                    updateMetrics(data);
+                })
+                .catch(err => {
+                    console.error('Error fetching metrics:', err);
+                    // Don't show alert on initial load - might be annoying
+                    const demoStatus = document.getElementById('demo-status');
+                    if (demoStatus) {
+                        demoStatus.textContent = 'Error loading metrics';
+                        demoStatus.style.color = 'var(--danger)';
+                    }
+                });
+        }
+
+        function runDemo() {
+            // Find the Run Demo button
+            let btn = document.getElementById('run-demo-btn');
+            if (!btn) {
+                // Fallback: try querySelector
+                btn = document.querySelector('button[onclick="runDemo()"]');
+            }
+            if (!btn) {
+                // Fallback: try to find by text
+                const buttons = Array.from(document.querySelectorAll('.btn'));
+                btn = buttons.find(b => b.textContent.includes('Run Demo'));
+            }
+            
+            if (btn) {
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = '⏳ Running...';
+                
+                fetch('/api/run-demo', { method: 'POST' })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log('Demo response received:', data);
+                        
+                        // Extract metrics from response
+                        let metricsData = null;
+                        if (data.status === 'success' && data.metrics) {
+                            metricsData = data.metrics;
+                        } else if (data.metrics) {
+                            metricsData = data.metrics;
+                        } else if (data.scenario1 || data.scenario2 || data.scenario3) {
+                            // If metrics are at root level
+                            metricsData = data;
+                        }
+                        
+                        if (metricsData) {
+                            console.log('Updating dashboard with metrics:', metricsData);
+                            console.log('Metrics data keys:', Object.keys(metricsData));
+                            console.log('Scenario1 data:', metricsData.scenario1);
+                            console.log('Scenario2 data:', metricsData.scenario2);
+                            console.log('Scenario3 data:', metricsData.scenario3);
+                            
+                            // Update metrics directly from response
+                            updateMetrics(metricsData);
+                            
+                            // Force a visual update by triggering a reflow
+                            document.body.offsetHeight;
+                            
+                            // Show success message
+                            const statusEl = document.getElementById('demo-status');
+                            if (statusEl) {
+                                statusEl.textContent = '✅ Completed';
+                                statusEl.style.color = 'var(--accent)';
+                            }
+                            
+                            // Force a small delay then refresh to ensure UI updates
+                            setTimeout(() => {
+                                console.log('Refreshing metrics after demo...');
+                                refreshMetrics();
+                            }, 500);
+                        } else {
+                            console.warn('No metrics found in response, refreshing from API');
+                            console.log('Full response data:', data);
+                            // If no metrics in response, refresh from API
+                            refreshMetrics();
+                        }
+                        
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    })
+                    .catch(err => {
+                        console.error('Error running demo:', err);
+                        alert('Could not run demo: ' + err.message);
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    });
+            } else {
+                // Button not found, just call API and refresh
+                fetch('/api/run-demo', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.metrics) {
+                            updateMetrics(data.metrics);
+                        }
+                        setTimeout(refreshMetrics, 500);
+                    })
+                    .catch(err => {
+                        console.error('Error running demo:', err);
+                        alert('Could not run demo. Check server logs.');
+                    });
+            }
+        }
+
+        // Ensure page is visible immediately
+        document.body.style.display = 'block';
+        
+        // Initial load - wait for DOM to be ready
+        function initializeDashboard() {
+            console.log('Initializing dashboard...');
+            console.log('DOM ready state:', document.readyState);
+            
+            // Make sure content is visible
+            const container = document.querySelector('.container');
+            if (container) {
+                container.style.opacity = '1';
+            }
+            
+            // Fetch initial metrics with timeout
+            const timeoutId = setTimeout(() => {
+                console.warn('Initial metrics fetch timed out after 5 seconds');
+                // Set default values if API doesn't respond
+                updateMetrics({
+                    total_scenarios: 3,
+                    total_datapoints: 0,
+                    total_outliers: 0,
+                    total_skewed: 0,
+                    demo_status: 'Not Loaded'
+                });
+            }, 5000);
+            
+            fetch('/api/metrics')
+                .then(res => {
+                    clearTimeout(timeoutId);
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    clearTimeout(timeoutId);
+                    console.log('Initial metrics loaded:', data);
+                    updateMetrics(data);
+                })
+                .catch(err => {
+                    clearTimeout(timeoutId);
+                    console.error('Error loading initial metrics:', err);
+                    // Don't show alert - just log and continue
+                    const demoStatus = document.getElementById('demo-status');
+                    if (demoStatus) {
+                        demoStatus.textContent = 'Error: ' + err.message;
+                        demoStatus.style.color = 'var(--danger)';
+                    }
+                });
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeDashboard);
+        } else {
+            // DOM already loaded
+            initializeDashboard();
+        }
+        
+        // Auto-refresh every 5 seconds (only after initial load)
+        setTimeout(() => {
+            setInterval(refreshMetrics, 5000);
+        }, 1000);
+    </script>
+</body>
+</html>
