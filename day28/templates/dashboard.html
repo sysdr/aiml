@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 28: Real-Time Correlation & Covariance Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chart-line"></i> Day 28: Correlation & Covariance - Real-Time Dashboard</h1>
+            <div class="header-controls">
+                <button id="startBtn" class="btn btn-success">
+                    <i class="fas fa-play"></i> Start Demo
+                </button>
+                <button id="stopBtn" class="btn btn-danger" disabled>
+                    <i class="fas fa-stop"></i> Stop Demo
+                </button>
+                <span class="status-indicator" id="statusIndicator">
+                    <i class="fas fa-circle"></i> <span id="statusText">Ready</span>
+                </span>
+                <span class="last-update" id="lastUpdate">Last update: --</span>
+            </div>
+        </header>
+
+        <div class="overview-section">
+            <h2><i class="fas fa-chart-bar"></i> Overview Statistics</h2>
+            <div class="overview-grid" id="overviewGrid">
+                <!-- Overview metrics will be dynamically generated here -->
+            </div>
+        </div>
+
+        <div class="dashboard-grid" id="dashboardGrid">
+            <!-- Feature pair cards will be dynamically generated here -->
+        </div>
+
+        <div class="summary-section">
+            <h2><i class="fas fa-table"></i> Correlation Summary Table</h2>
+            <table id="summaryTable" class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Feature Pair</th>
+                        <th>Correlation</th>
+                        <th>Covariance</th>
+                        <th>Strength</th>
+                        <th>Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody id="summaryTableBody">
+                    <!-- Table rows will be dynamically generated -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
+
