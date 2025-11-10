@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 29: Central Limit Theorem - Real-Time Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid #e5e7eb;
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+        
+        .btn-success:hover:not(:disabled) {
+            background: #047857;
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            background: #b91c1c;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: #f3f4f6;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        
+        .status-indicator.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-indicator .fa-circle {
+            color: #059669;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .last-update {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .section {
+            background: white;
+            padding: 28px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .section h2 {
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+        }
+        
+        .metric-card h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .comparison-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .model-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #059669;
+        }
+        
+        .model-card h3 {
+            color: #047857;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-row strong {
+            color: #374151;
+        }
+        
+        .metric-row .value {
+            color: #059669;
+            font-weight: bold;
+        }
+        
+        .comparison-result {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .comparison-result.significant {
+            background: #d1fae5;
+            border-left-color: #059669;
+        }
+        
+        .ab-test-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .ab-test-table th,
+        .ab-test-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .ab-test-table th {
+            background: #f3f4f6;
+            font-weight: bold;
+            color: #374151;
+        }
+        
+        .ab-test-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .zero-warning {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Day 29: Central Limit Theorem - Real-Time Dashboard</h1>
+            <div class="header-controls">
+                <button id="startBtn" class="btn btn-success">▶ Start Demo</button>
+                <button id="stopBtn" class="btn btn-danger" disabled>⏹ Stop Demo</button>
+                <span class="status-indicator" id="statusIndicator">
+                    <span id="statusText">Ready</span>
+                </span>
+                <span class="last-update" id="lastUpdate">Last update: --</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>🎯 Central Limit Theorem Metrics</h2>
+            <div class="metrics-grid" id="cltMetrics">
+                <!-- CLT metrics will be populated here -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🤖 ML Model Confidence Intervals</h2>
+            <div class="comparison-section" id="modelComparison">
+                <!-- Model comparison will be populated here -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🧪 A/B Test Sample Size Calculator</h2>
+            <div id="abTestMetrics">
+                <!-- A/B test metrics will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let updateInterval = null;
+        let isRunning = false;
+
+        function formatNumber(num, decimals = 4) {
+            if (num === null || num === undefined || isNaN(num)) return '0.0000';
+            return num.toFixed(decimals);
+        }
+
+        function formatPercent(num, decimals = 2) {
+            if (num === null || num === undefined || isNaN(num)) return '0.00%';
+            return (num * 100).toFixed(decimals) + '%';
+        }
+
+        function formatLargeNumber(num) {
+            if (num === null || num === undefined || isNaN(num)) return '0';
+            return num.toLocaleString();
+        }
+
+        function checkForZeros(data) {
+            const warnings = [];
+            
+            // Check CLT metrics
+            if (data.clt_metrics) {
+                const cm = data.clt_metrics;
+                if (cm.population_mean === 0 || cm.sample_means_mean === 0 || cm.theoretical_se === 0) {
+                    warnings.push('CLT metrics contain zero values');
+                }
+            }
+            
+            // Check model metrics
+            if (data.model_metrics) {
+                const mm = data.model_metrics;
+                if (mm.model_a && (mm.model_a.accuracy === 0 || mm.model_a.standard_error === 0)) {
+                    warnings.push('Model A metrics contain zero values');
+                }
+                if (mm.model_b && (mm.model_b.accuracy === 0 || mm.model_b.standard_error === 0)) {
+                    warnings.push('Model B metrics contain zero values');
+                }
+            }
+            
+            // Check A/B test metrics
+            if (data.ab_test_metrics) {
+                const ab = data.ab_test_metrics;
+                if (ab.baseline_rate === 0) {
+                    warnings.push('A/B test baseline rate is zero');
+                }
+                if (ab.effect_sizes && ab.effect_sizes.some(e => e.total_sample_size === 0)) {
+                    warnings.push('A/B test sample sizes contain zero values');
+                }
+            }
+            
+            return warnings;
+        }
+
+        function updateCLTMetrics(cltMetrics) {
+            const container = document.getElementById('cltMetrics');
+            if (!cltMetrics) {
+                container.innerHTML = '<div class="zero-warning">⚠️ CLT metrics not available</div>';
+                return;
+            }
+
+            const metrics = [
+                { label: 'Population Mean', value: formatNumber(cltMetrics.population_mean), sub: 'True population average' },
+                { label: 'Sample Means Mean', value: formatNumber(cltMetrics.sample_means_mean), sub: 'Average of sample means' },
+                { label: 'Population Std Dev', value: formatNumber(cltMetrics.population_std), sub: 'Population standard deviation' },
+                { label: 'Theoretical SE', value: formatNumber(cltMetrics.theoretical_se), sub: 'σ/√n' },
+                { label: 'Observed SE', value: formatNumber(cltMetrics.sample_means_std), sub: 'From sample means' },
+                { label: 'Mean Difference', value: formatNumber(cltMetrics.mean_difference), sub: '|Sample Mean - Pop Mean|' },
+                { label: 'SE Ratio', value: formatNumber(cltMetrics.se_ratio), sub: 'Observed / Theoretical' },
+                { label: 'CLT Verified', value: cltMetrics.clt_verified ? '✓ Yes' : '✗ No', sub: 'Means converge to normal' }
+            ];
+
+            container.innerHTML = metrics.map(m => `
+                <div class="metric-card">
+                    <h3>${m.label}</h3>
+                    <div class="metric-value">${m.value}</div>
+                    <div class="metric-label">${m.sub}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateModelMetrics(modelMetrics) {
+            const container = document.getElementById('modelComparison');
+            if (!modelMetrics || !modelMetrics.model_a || !modelMetrics.model_b) {
+                container.innerHTML = '<div class="zero-warning">⚠️ Model metrics not available</div>';
+                return;
+            }
+
+            const ma = modelMetrics.model_a;
+            const mb = modelMetrics.model_b;
+            const comp = modelMetrics.comparison;
+
+            container.innerHTML = `
+                <div class="model-card">
+                    <h3>Model A (New)</h3>
+                    <div class="metric-row">
+                        <strong>Accuracy:</strong>
+                        <span class="value">${formatPercent(ma.accuracy)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>Standard Error:</strong>
+                        <span class="value">${formatNumber(ma.standard_error)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>95% CI Lower:</strong>
+                        <span class="value">${formatPercent(ma.ci_lower)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>95% CI Upper:</strong>
+                        <span class="value">${formatPercent(ma.ci_upper)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>Margin of Error:</strong>
+                        <span class="value">±${formatPercent(ma.margin_of_error)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>Sample Size:</strong>
+                        <span class="value">${formatLargeNumber(ma.sample_size)}</span>
+                    </div>
+                </div>
+                <div class="model-card">
+                    <h3>Model B (Baseline)</h3>
+                    <div class="metric-row">
+                        <strong>Accuracy:</strong>
+                        <span class="value">${formatPercent(mb.accuracy)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>Standard Error:</strong>
+                        <span class="value">${formatNumber(mb.standard_error)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>95% CI Lower:</strong>
+                        <span class="value">${formatPercent(mb.ci_lower)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>95% CI Upper:</strong>
+                        <span class="value">${formatPercent(mb.ci_upper)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>Margin of Error:</strong>
+                        <span class="value">±${formatPercent(mb.margin_of_error)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <strong>Sample Size:</strong>
+                        <span class="value">${formatLargeNumber(mb.sample_size)}</span>
+                    </div>
+                    <div class="comparison-result ${comp.statistically_significant ? 'significant' : ''}">
+                        <strong>Comparison:</strong><br>
+                        Difference: ${formatPercent(comp.difference)}<br>
+                        P-value: ${formatNumber(comp.p_value)}<br>
+                        Statistically Significant: ${comp.statistically_significant ? '✓ Yes' : '✗ No'}<br>
+                        CIs Overlap: ${comp.intervals_overlap ? 'Yes' : 'No'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateABTestMetrics(abMetrics) {
+            const container = document.getElementById('abTestMetrics');
+            if (!abMetrics || !abMetrics.effect_sizes) {
+                container.innerHTML = '<div class="zero-warning">⚠️ A/B test metrics not available</div>';
+                return;
+            }
+
+            let html = `
+                <div style="margin-bottom: 15px;">
+                    <strong>Baseline Rate:</strong> ${formatPercent(abMetrics.baseline_rate)} | 
+                    <strong>Power:</strong> ${formatPercent(abMetrics.power)} | 
+                    <strong>Alpha:</strong> ${abMetrics.alpha}
+                </div>
+                <table class="ab-test-table">
+                    <thead>
+                        <tr>
+                            <th>Effect Size</th>
+                            <th>New Rate</th>
+                            <th>Sample Size per Group</th>
+                            <th>Total Sample Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            abMetrics.effect_sizes.forEach(effect => {
+                html += `
+                    <tr>
+                        <td><strong>${formatPercent(effect.effect_size)}</strong></td>
+                        <td>${formatPercent(effect.new_rate)}</td>
+                        <td>${formatLargeNumber(effect.sample_size_per_group)}</td>
+                        <td><strong>${formatLargeNumber(effect.total_sample_size)}</strong></td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('/api/metrics');
+                const data = await response.json();
+                
+                // Check for zero values
+                const warnings = checkForZeros(data);
+                if (warnings.length > 0) {
+                    console.warn('Zero value warnings:', warnings);
+                }
+                
+                // Update all sections
+                updateCLTMetrics(data.clt_metrics);
+                updateModelMetrics(data.model_metrics);
+                updateABTestMetrics(data.ab_test_metrics);
+                
+                // Update last update time
+                if (data.last_update) {
+                    const date = new Date(data.last_update);
+                    document.getElementById('lastUpdate').textContent = 
+                        `Last update: ${date.toLocaleTimeString()}`;
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('Error fetching metrics:', error);
+            }
+        }
+
+        function startDemo() {
+            fetch('/api/start')
+                .then(r => r.json())
+                .then(data => {
+                    isRunning = true;
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('stopBtn').disabled = false;
+                    document.getElementById('statusIndicator').classList.add('active');
+                    document.getElementById('statusText').textContent = 'Running';
+                    
+                    updateInterval = setInterval(fetchMetrics, 3000);
+                    fetchMetrics(); // Initial fetch
+                });
+        }
+
+        function stopDemo() {
+            fetch('/api/stop')
+                .then(r => r.json())
+                .then(data => {
+                    isRunning = false;
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('stopBtn').disabled = true;
+                    document.getElementById('statusIndicator').classList.remove('active');
+                    document.getElementById('statusText').textContent = 'Stopped';
+                    
+                    if (updateInterval) {
+                        clearInterval(updateInterval);
+                        updateInterval = null;
+                    }
+                });
+        }
+
+        // Event listeners
+        document.getElementById('startBtn').addEventListener('click', startDemo);
+        document.getElementById('stopBtn').addEventListener('click', stopDemo);
+
+        // Initial load
+        fetchMetrics();
+        
+        // Auto-start demo
+        setTimeout(startDemo, 1000);
+    </script>
+</body>
+</html>
+
