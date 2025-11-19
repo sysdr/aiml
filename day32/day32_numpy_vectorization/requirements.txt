@@ -1,0 +1,4 @@
+numpy>=1.26.0
+pytest>=8.0.0
+streamlit>=1.37.0
+plotly>=5.24.0
