@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Training Metrics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            color: #667eea;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .chart-card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .data-table-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .data-table-card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.2em;
+        }
+        
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 ML Training Metrics Dashboard</h1>
+            <p>Day 33: Introduction to Pandas - Real-time Data Analysis</p>
+        </div>
+        
+        <div id="loading" class="loading">Loading dashboard data...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div id="dashboard" style="display: none;">
+            <div class="stats-grid" id="statsGrid"></div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h2>Accuracy by Model</h2>
+                    <canvas id="accuracyChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h2>Training Progress Over Epochs</h2>
+                    <canvas id="progressChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h2>Loss by Model</h2>
+                    <canvas id="lossChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h2>Model Comparison</h2>
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="data-table-card">
+                <h2>Model Statistics</h2>
+                <table id="modelStatsTable">
+                    <thead>
+                        <tr>
+                            <th>Model ID</th>
+                            <th>Max Accuracy</th>
+                            <th>Avg Accuracy</th>
+                            <th>Min Loss</th>
+                            <th>Total Training Time (sec)</th>
+                            <th>Total Epochs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modelStatsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="data-table-card">
+                <h2>Raw Data</h2>
+                <table id="rawDataTable">
+                    <thead>
+                        <tr>
+                            <th>Model ID</th>
+                            <th>Epoch</th>
+                            <th>Accuracy</th>
+                            <th>Loss</th>
+                            <th>Learning Rate</th>
+                            <th>Training Time (sec)</th>
+                            <th>GPU Memory (MB)</th>
+                            <th>Batch Size</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rawDataBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let charts = {};
+        
+        async function loadDashboard() {
+            try {
+                // Load all data
+                const [summary, modelStats, progress, rawData] = await Promise.all([
+                    fetch('/api/summary').then(r => r.json()),
+                    fetch('/api/model_stats').then(r => r.json()),
+                    fetch('/api/training_progress').then(r => r.json()),
+                    fetch('/api/data').then(r => r.json())
+                ]);
+                
+                // Hide loading, show dashboard
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                
+                // Populate stats
+                populateStats(summary);
+                
+                // Create charts
+                createAccuracyChart(modelStats);
+                createProgressChart(progress);
+                createLossChart(modelStats);
+                createComparisonChart(modelStats);
+                
+                // Populate tables
+                populateModelStatsTable(modelStats);
+                populateRawDataTable(rawData);
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = 'Error loading dashboard: ' + error.message;
+            }
+        }
+        
+        function populateStats(summary) {
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <h3>Total Records</h3>
+                    <div class="value">${summary.total_records}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Models</h3>
+                    <div class="value">${summary.total_models}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Average Accuracy</h3>
+                    <div class="value">${summary.avg_accuracy.toFixed(3)}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Max Accuracy</h3>
+                    <div class="value">${summary.max_accuracy.toFixed(3)}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Min Loss</h3>
+                    <div class="value">${summary.min_loss.toFixed(3)}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Missing Values</h3>
+                    <div class="value">${summary.missing_values}</div>
+                </div>
+            `;
+        }
+        
+        function createAccuracyChart(modelStats) {
+            const ctx = document.getElementById('accuracyChart').getContext('2d');
+            charts.accuracy = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: modelStats.map(m => m.model_id),
+                    datasets: [{
+                        label: 'Max Accuracy',
+                        data: modelStats.map(m => m.max_accuracy),
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 2
+                    }, {
+                        label: 'Avg Accuracy',
+                        data: modelStats.map(m => m.avg_accuracy),
+                        backgroundColor: 'rgba(118, 75, 162, 0.8)',
+                        borderColor: 'rgba(118, 75, 162, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1.0
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createProgressChart(progress) {
+            const models = [...new Set(progress.map(p => p.model_id))];
+            const datasets = models.map((modelId, idx) => {
+                const modelData = progress.filter(p => p.model_id === modelId);
+                const colors = [
+                    'rgba(102, 126, 234, 1)',
+                    'rgba(118, 75, 162, 1)',
+                    'rgba(255, 107, 107, 1)',
+                    'rgba(255, 206, 84, 1)'
+                ];
+                return {
+                    label: modelId,
+                    data: modelData.map(d => ({x: d.epoch, y: d.accuracy})),
+                    borderColor: colors[idx % colors.length],
+                    backgroundColor: colors[idx % colors.length].replace('1)', '0.2)'),
+                    tension: 0.4,
+                    fill: false
+                };
+            });
+            
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            charts.progress = new Chart(ctx, {
+                type: 'line',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Epoch' } },
+                        y: { 
+                            title: { display: true, text: 'Accuracy' },
+                            beginAtZero: true,
+                            max: 1.0
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createLossChart(modelStats) {
+            const ctx = document.getElementById('lossChart').getContext('2d');
+            charts.loss = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: modelStats.map(m => m.model_id),
+                    datasets: [{
+                        label: 'Min Loss',
+                        data: modelStats.map(m => m.min_loss),
+                        backgroundColor: 'rgba(255, 107, 107, 0.8)',
+                        borderColor: 'rgba(255, 107, 107, 1)',
+                        borderWidth: 2
+                    }, {
+                        label: 'Avg Loss',
+                        data: modelStats.map(m => m.avg_loss),
+                        backgroundColor: 'rgba(255, 206, 84, 0.8)',
+                        borderColor: 'rgba(255, 206, 84, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createComparisonChart(modelStats) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            charts.comparison = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Max Accuracy', 'Avg Accuracy', 'Efficiency (1/Loss)', 'Training Speed'],
+                    datasets: modelStats.map((m, idx) => {
+                        const colors = [
+                            'rgba(102, 126, 234, 0.6)',
+                            'rgba(118, 75, 162, 0.6)',
+                            'rgba(255, 107, 107, 0.6)',
+                            'rgba(255, 206, 84, 0.6)'
+                        ];
+                        const maxTime = Math.max(...modelStats.map(ms => ms.total_training_time));
+                        return {
+                            label: m.model_id,
+                            data: [
+                                m.max_accuracy,
+                                m.avg_accuracy,
+                                1 / m.min_loss,
+                                1 - (m.total_training_time / maxTime)
+                            ],
+                            backgroundColor: colors[idx % colors.length],
+                            borderColor: colors[idx % colors.length].replace('0.6', '1'),
+                            borderWidth: 2
+                        };
+                    })
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function populateModelStatsTable(modelStats) {
+            const tbody = document.getElementById('modelStatsBody');
+            tbody.innerHTML = modelStats.map(m => `
+                <tr>
+                    <td>${m.model_id}</td>
+                    <td>${m.max_accuracy}</td>
+                    <td>${m.avg_accuracy}</td>
+                    <td>${m.min_loss}</td>
+                    <td>${m.total_training_time}</td>
+                    <td>${m.total_epochs}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function populateRawDataTable(rawData) {
+            const tbody = document.getElementById('rawDataBody');
+            tbody.innerHTML = rawData.map(d => `
+                <tr>
+                    <td>${d.model_id}</td>
+                    <td>${d.epoch}</td>
+                    <td>${d.accuracy.toFixed(3)}</td>
+                    <td>${d.loss.toFixed(3)}</td>
+                    <td>${d.learning_rate}</td>
+                    <td>${d.training_time_sec || 'N/A'}</td>
+                    <td>${d.gpu_memory_mb}</td>
+                    <td>${d.batch_size}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // Load dashboard on page load
+        loadDashboard();
+    </script>
+</body>
+</html>
+
