@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 34: DataFrame Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 DataFrame Indexing, Slicing & Filtering Dashboard</h1>
+            <p class="subtitle">Day 34: Production-Grade Data Selection Systems</p>
+        </header>
+
+        <!-- Stats Overview -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                    <h3 id="total-items">-</h3>
+                    <p>Total Content Items</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👁️</div>
+                <div class="stat-info">
+                    <h3 id="total-views">-</h3>
+                    <p>Total Views</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-info">
+                    <h3 id="avg-rating">-</h3>
+                    <p>Average Rating</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3 id="avg-completion">-</h3>
+                    <p>Avg Completion Rate</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualization Section -->
+        <section class="visualization-section">
+            <h2>Data Analysis Visualizations</h2>
+            <div class="viz-container">
+                <div id="viz-loading" style="text-align: center; padding: 40px; color: #666;">Loading visualization...</div>
+                <img id="main-viz" alt="Data Visualization" style="display:none; max-width: 100%;" />
+            </div>
+        </section>
+
+        <!-- Recommendations Section -->
+        <section class="recommendations-section">
+            <h2>🎬 Content Recommendations</h2>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="category-select">Category:</label>
+                    <select id="category-select">
+                        <option value="tech">Tech</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="education">Education</option>
+                        <option value="sports">Sports</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="quality-slider">Min Quality:</label>
+                    <input type="range" id="quality-slider" min="0" max="1" step="0.1" value="0.7">
+                    <span id="quality-value">0.7</span>
+                </div>
+                <button onclick="loadRecommendations()" class="btn-primary">Get Recommendations</button>
+            </div>
+            <div id="recommendations-container"></div>
+        </section>
+
+        <!-- Filtering Demo Section -->
+        <section class="filtering-demo">
+            <h2>🔍 Filtering Operations Demo</h2>
+            <div class="filter-cards">
+                <div class="filter-card">
+                    <h3>Popular Content</h3>
+                    <p class="filter-desc">Views > 50,000</p>
+                    <div class="filter-result">
+                        <span id="popular-count">-</span>
+                        <span class="percentage" id="popular-pct">-</span>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <h3>High Quality</h3>
+                    <p class="filter-desc">Completion > 0.7 AND Rating > 4.0 AND Views > 5K</p>
+                    <div class="filter-result">
+                        <span id="quality-count">-</span>
+                        <span class="percentage" id="quality-pct">-</span>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <h3>Viral or Engaging</h3>
+                    <p class="filter-desc">Shares > 1K OR Completion > 0.9</p>
+                    <div class="filter-result">
+                        <span id="viral-count">-</span>
+                        <span class="percentage" id="viral-pct">-</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Table Section -->
+        <section class="data-table-section">
+            <h2>📋 Content Data</h2>
+            <div class="table-controls">
+                <div class="control-group">
+                    <label for="filter-category">Category:</label>
+                    <select id="filter-category">
+                        <option value="all">All</option>
+                        <option value="tech">Tech</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="education">Education</option>
+                        <option value="sports">Sports</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="min-views">Min Views:</label>
+                    <input type="number" id="min-views" value="0" min="0">
+                </div>
+                <div class="control-group">
+                    <label for="min-rating">Min Rating:</label>
+                    <input type="number" id="min-rating" value="0" min="0" max="5" step="0.1">
+                </div>
+                <button onclick="loadDataTable()" class="btn-secondary">Apply Filters</button>
+            </div>
+            <div class="table-container">
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Views</th>
+                            <th>Rating</th>
+                            <th>Completion</th>
+                            <th>Likes</th>
+                            <th>Watch Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <button onclick="previousPage()" id="prev-btn" disabled>Previous</button>
+                <span id="page-info">Page 1 of 1</span>
+                <button onclick="nextPage()" id="next-btn">Next</button>
+            </div>
+        </section>
+
+        <!-- Quality Analysis Section -->
+        <section class="quality-section">
+            <h2>📊 Data Quality Analysis</h2>
+            <div id="quality-metrics"></div>
+        </section>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+
+        // Load initial data
+        window.onload = function() {
+            loadStats();
+            loadVisualization();
+            loadFilteringDemo();
+            loadQualityAnalysis();
+            loadDataTable();
+            loadRecommendations();
+        };
+
+        // Format numbers
+        function formatNumber(num) {
+            return new Intl.NumberFormat().format(num);
+        }
+
+        function formatFloat(num, decimals = 2) {
+            return parseFloat(num).toFixed(decimals);
+        }
+
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                document.getElementById('total-items').textContent = formatNumber(data.total_items);
+                document.getElementById('total-views').textContent = formatNumber(data.total_views);
+                document.getElementById('avg-rating').textContent = formatFloat(data.avg_rating);
+                document.getElementById('avg-completion').textContent = formatFloat(data.avg_completion_rate * 100) + '%';
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load visualization
+        async function loadVisualization() {
+            try {
+                const response = await fetch('/api/visualization');
+                const data = await response.json();
+                const img = document.getElementById('main-viz');
+                const loading = document.getElementById('viz-loading');
+                if (data.image) {
+                    img.src = data.image;
+                    img.style.display = 'block';
+                    if (loading) loading.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading visualization:', error);
+                const loading = document.getElementById('viz-loading');
+                if (loading) loading.textContent = 'Error loading visualization';
+            }
+        }
+
+        // Load filtering demo
+        async function loadFilteringDemo() {
+            try {
+                const response = await fetch('/api/filtering-demo');
+                const data = await response.json();
+                
+                document.getElementById('popular-count').textContent = formatNumber(data.popular);
+                document.getElementById('popular-pct').textContent = formatFloat(data.popular_percentage) + '%';
+                
+                document.getElementById('quality-count').textContent = formatNumber(data.high_quality);
+                document.getElementById('quality-pct').textContent = formatFloat(data.high_quality_percentage) + '%';
+                
+                document.getElementById('viral-count').textContent = formatNumber(data.viral_or_engaging);
+                document.getElementById('viral-pct').textContent = formatFloat(data.viral_or_engaging_percentage) + '%';
+            } catch (error) {
+                console.error('Error loading filtering demo:', error);
+            }
+        }
+
+        // Load recommendations
+        async function loadRecommendations() {
+            try {
+                const category = document.getElementById('category-select').value;
+                const quality = document.getElementById('quality-slider').value;
+                
+                const response = await fetch(`/api/recommendations?category=${category}&min_quality=${quality}`);
+                const data = await response.json();
+                
+                const container = document.getElementById('recommendations-container');
+                if (data.recommendations.length === 0) {
+                    container.innerHTML = '<p class="no-data">No recommendations found with these criteria.</p>';
+                    return;
+                }
+                
+                let html = '<div class="recommendations-grid">';
+                data.recommendations.forEach(item => {
+                    html += `
+                        <div class="recommendation-card">
+                            <h4>${item.title}</h4>
+                            <div class="rec-metrics">
+                                <span>👁️ ${formatNumber(item.views)} views</span>
+                                <span>⭐ ${formatFloat(item.rating)}</span>
+                                <span>✅ ${formatFloat(item.completion_rate * 100)}%</span>
+                            </div>
+                            <div class="engagement-score">Engagement: ${formatFloat(item.engagement_score)}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading recommendations:', error);
+            }
+        }
+
+        // Load data table
+        async function loadDataTable() {
+            try {
+                const category = document.getElementById('filter-category').value;
+                const minViews = document.getElementById('min-views').value;
+                const minRating = document.getElementById('min-rating').value;
+                
+                const response = await fetch(`/api/data?page=${currentPage}&category=${category}&min_views=${minViews}&min_rating=${minRating}`);
+                const data = await response.json();
+                
+                totalPages = data.total_pages;
+                
+                // Update table
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = '';
+                
+                data.data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.content_id}</td>
+                        <td>${item.title}</td>
+                        <td>${item.category}</td>
+                        <td>${formatNumber(item.views)}</td>
+                        <td>${formatFloat(item.rating)}</td>
+                        <td>${formatFloat(item.completion_rate * 100)}%</td>
+                        <td>${formatNumber(item.likes)}</td>
+                        <td>${item.watch_time_minutes} min</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                // Update pagination
+                document.getElementById('page-info').textContent = `Page ${data.page} of ${totalPages}`;
+                document.getElementById('prev-btn').disabled = currentPage === 1;
+                document.getElementById('next-btn').disabled = currentPage >= totalPages;
+            } catch (error) {
+                console.error('Error loading data table:', error);
+            }
+        }
+
+        // Load quality analysis
+        async function loadQualityAnalysis() {
+            try {
+                const response = await fetch('/api/quality-analysis');
+                const data = await response.json();
+                
+                const container = document.getElementById('quality-metrics');
+                const total = data.total;
+                
+                container.innerHTML = `
+                    <div class="quality-grid">
+                        <div class="quality-card">
+                            <h3>Total Content</h3>
+                            <p class="quality-value">${formatNumber(total)}</p>
+                        </div>
+                        <div class="quality-card warning">
+                            <h3>Low Quality</h3>
+                            <p class="quality-value">${formatNumber(data.low_quality)}</p>
+                            <p class="quality-pct">${formatFloat(data.low_quality / total * 100)}%</p>
+                        </div>
+                        <div class="quality-card success">
+                            <h3>High Engagement</h3>
+                            <p class="quality-value">${formatNumber(data.high_engagement)}</p>
+                            <p class="quality-pct">${formatFloat(data.high_engagement / total * 100)}%</p>
+                        </div>
+                        <div class="quality-card info">
+                            <h3>Underperforming</h3>
+                            <p class="quality-value">${formatNumber(data.underperforming)}</p>
+                            <p class="quality-pct">${formatFloat(data.underperforming / total * 100)}%</p>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading quality analysis:', error);
+            }
+        }
+
+        // Pagination functions
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadDataTable();
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadDataTable();
+            }
+        }
+
+        // Quality slider update
+        document.getElementById('quality-slider').addEventListener('input', function(e) {
+            document.getElementById('quality-value').textContent = e.target.value;
+        });
+    </script>
+</body>
+</html>
+
