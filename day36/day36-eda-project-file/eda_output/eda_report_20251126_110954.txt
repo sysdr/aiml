@@ -1,0 +1,97 @@
+EXPLORATORY DATA ANALYSIS REPORT
+Dataset: Test Dataset
+Generated: 2025-11-26 11:09:54
+
+============================================================
+DATA PROFILING
+============================================================
+
+Dataset: Test Dataset
+Dimensions: 5 rows × 4 columns
+Memory Usage: 0.00 MB
+        
+Column Overview:
+numeric1          int64
+numeric2          int64
+category         object
+with_missing    float64
+
+First 3 Rows:
+   numeric1  numeric2 category  with_missing
+0         1        10        A           1.0
+1         2        20        B           NaN
+2         3        30        A           3.0
+
+Last 3 Rows:
+   numeric1  numeric2 category  with_missing
+2         3        30        A           3.0
+3         4        40        B           NaN
+4         5        50        C           5.0
+        
+
+============================================================
+DATA QUALITY
+============================================================
+
+Missing Values Summary:
+Total Cells: 20
+Missing Cells: 2
+Overall Completeness: 90.00%
+
+Columns with Missing Data:
+              Missing_Count  Missing_Percentage Data_Type
+with_missing              2                40.0   float64
+        
+
+============================================================
+OUTLIER ANALYSIS
+============================================================
+
+Outlier Detection (3×IQR method):
+No significant outliers detected ✓
+
+============================================================
+STATISTICAL SUMMARY
+============================================================
+
+Summary Statistics:
+        numeric1  numeric2 category  with_missing
+count       5.00      5.00        5           3.0
+unique       NaN       NaN        3           NaN
+top          NaN       NaN        A           NaN
+freq         NaN       NaN        2           NaN
+mean        3.00     30.00      NaN           3.0
+std         1.58     15.81      NaN           2.0
+min         1.00     10.00      NaN           1.0
+25%         2.00     20.00      NaN           2.0
+50%         3.00     30.00      NaN           3.0
+75%         4.00     40.00      NaN           4.0
+max         5.00     50.00      NaN           5.0
+        
+
+============================================================
+CORRELATION ANALYSIS
+============================================================
+
+Correlation Matrix:
+              numeric1  numeric2  with_missing
+numeric1           1.0       1.0           1.0
+numeric2           1.0       1.0           1.0
+with_missing       1.0       1.0           1.0
+
+Strong Correlations (|r| > 0.7):
+        
+numeric1 ↔ numeric2: 1.000
+numeric1 ↔ with_missing: 1.000
+numeric2 ↔ with_missing: 1.000
+
+============================================================
+CATEGORICAL ANALYSIS
+============================================================
+
+Categorical Features Analysis:
+
+category:
+  - Unique values: 3
+  - Most common: A (2 occurrences)
+  - Distribution: {'A': 2, 'B': 2, 'C': 1}

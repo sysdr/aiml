@@ -1,0 +1,75 @@
+EXPLORATORY DATA ANALYSIS REPORT
+Dataset: All Categorical
+Generated: 2025-11-26 11:09:57
+
+============================================================
+DATA PROFILING
+============================================================
+
+Dataset: All Categorical
+Dimensions: 100 rows × 2 columns
+Memory Usage: 0.01 MB
+        
+Column Overview:
+cat1    object
+cat2    object
+
+First 3 Rows:
+  cat1 cat2
+0    A    X
+1    B    Y
+2    C    Z
+
+Last 3 Rows:
+   cat1 cat2
+97    B    Y
+98    C    Z
+99    A    X
+        
+
+============================================================
+DATA QUALITY
+============================================================
+
+Missing Values Summary:
+Total Cells: 200
+Missing Cells: 0
+Overall Completeness: 100.00%
+
+Columns with Missing Data:
+No missing values found! ✓
+        
+
+============================================================
+OUTLIER ANALYSIS
+============================================================
+
+Outlier Detection (3×IQR method):
+No significant outliers detected ✓
+
+============================================================
+STATISTICAL SUMMARY
+============================================================
+
+Summary Statistics:
+       cat1 cat2
+count   100  100
+unique    3    3
+top       A    X
+freq     34   34
+        
+
+============================================================
+CATEGORICAL ANALYSIS
+============================================================
+
+Categorical Features Analysis:
+
+cat1:
+  - Unique values: 3
+  - Most common: A (34 occurrences)
+  - Distribution: {'A': 34, 'B': 33, 'C': 33}
+cat2:
+  - Unique values: 3
+  - Most common: X (34 occurrences)
+  - Distribution: {'X': 34, 'Y': 33, 'Z': 33}

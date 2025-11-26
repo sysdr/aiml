@@ -1,0 +1,119 @@
+EXPLORATORY DATA ANALYSIS REPORT
+Dataset: Integration Test
+Generated: 2025-11-26 11:10:01
+
+============================================================
+DATA PROFILING
+============================================================
+
+Dataset: Integration Test
+Dimensions: 5,000 rows × 9 columns
+Memory Usage: 1.10 MB
+        
+Column Overview:
+timestamp               datetime64[ns]
+user_age                       float64
+pages_viewed                   float64
+time_on_site_seconds           float64
+purchased                         bool
+revenue                        float64
+device_type                     object
+traffic_source                  object
+customer_segment                object
+
+First 3 Rows:
+                   timestamp  user_age  pages_viewed  time_on_site_seconds  purchased  revenue device_type traffic_source customer_segment
+0 2025-08-28 11:16:41.826454      22.0          16.0               1864.88       True   477.94     Desktop        Organic       High-Value
+1 2025-08-28 13:47:12.826454      38.0           5.0                580.03      False     0.00      Mobile        Organic          Bouncer
+2 2025-08-28 14:18:20.826454      31.0           NaN                625.82      False     0.00      Mobile           Paid          Bouncer
+
+Last 3 Rows:
+                      timestamp  user_age  pages_viewed  time_on_site_seconds  purchased  revenue device_type traffic_source customer_segment
+4997 2025-11-26 09:37:51.826454      37.0           4.0                215.09      False     0.00     Desktop        Organic          Bouncer
+4998 2025-11-26 10:12:57.826454      38.0           4.0                441.22       True    35.35      Mobile        Organic        Converter
+4999 2025-11-26 11:03:13.826454      34.0          12.0                437.73      False     0.00      Mobile         Direct          Bouncer
+        
+
+============================================================
+DATA QUALITY
+============================================================
+
+Missing Values Summary:
+Total Cells: 45,000
+Missing Cells: 474
+Overall Completeness: 98.95%
+
+Columns with Missing Data:
+              Missing_Count  Missing_Percentage Data_Type
+pages_viewed            248                4.96   float64
+user_age                226                4.52   float64
+        
+
+============================================================
+OUTLIER ANALYSIS
+============================================================
+
+Outlier Detection (3×IQR method):
+
+pages_viewed:
+  - 133 outliers (2.66%)
+  - Normal range: [-30.00, 47.00]
+time_on_site_seconds:
+  - 178 outliers (3.56%)
+  - Normal range: [-2071.34, 3184.99]
+revenue:
+  - 727 outliers (14.54%)
+  - Normal range: [0.00, 0.00]
+
+============================================================
+STATISTICAL SUMMARY
+============================================================
+
+Summary Statistics:
+                            timestamp  user_age  pages_viewed  time_on_site_seconds purchased  revenue device_type traffic_source customer_segment
+count                            5000   4774.00       4752.00               5000.00      5000  5000.00        5000           5000             5000
+unique                            NaN       NaN           NaN                   NaN         2      NaN           3              5                4
+top                               NaN       NaN           NaN                   NaN     False      NaN      Mobile        Organic          Bouncer
+freq                              NaN       NaN           NaN                   NaN      4273      NaN        3058           1747             3342
+mean    2025-10-12 13:34:11.506653952     35.13         11.34                793.17       NaN    10.10         NaN            NaN              NaN
+min        2025-08-28 11:16:41.826454     18.00          1.00                 20.04       NaN     0.00         NaN            NaN              NaN
+25%     2025-09-20 12:36:27.326454016     27.00          3.00                181.37       NaN     0.00         NaN            NaN              NaN
+50%     2025-10-12 12:07:53.826454016     35.00          7.00                429.22       NaN     0.00         NaN            NaN              NaN
+75%     2025-11-03 10:12:08.576454144     43.00         14.00                932.28       NaN     0.00         NaN            NaN              NaN
+max        2025-11-26 11:03:13.826454     75.00        100.00              11838.30       NaN  2000.00         NaN            NaN              NaN
+std                               NaN     11.10         13.78               1123.05       NaN    54.97         NaN            NaN              NaN
+        
+
+============================================================
+CORRELATION ANALYSIS
+============================================================
+
+Correlation Matrix:
+                      user_age  pages_viewed  time_on_site_seconds  revenue
+user_age                 1.000         0.010                -0.000   -0.027
+pages_viewed             0.010         1.000                 0.889   -0.001
+time_on_site_seconds    -0.000         0.889                 1.000    0.003
+revenue                 -0.027        -0.001                 0.003    1.000
+
+Strong Correlations (|r| > 0.7):
+        
+pages_viewed ↔ time_on_site_seconds: 0.889
+
+============================================================
+CATEGORICAL ANALYSIS
+============================================================
+
+Categorical Features Analysis:
+
+device_type:
+  - Unique values: 3
+  - Most common: Mobile (3058 occurrences)
+  - Distribution: {'Mobile': 3058, 'Desktop': 1691, 'Tablet': 251}
+traffic_source:
+  - Unique values: 5
+  - Most common: Organic (1747 occurrences)
+  - Distribution: {'Organic': 1747, 'Paid': 1271, 'Social': 962}
+customer_segment:
+  - Unique values: 4
+  - Most common: Bouncer (3342 occurrences)
+  - Distribution: {'Bouncer': 3342, 'Browser': 931, 'Converter': 480}
