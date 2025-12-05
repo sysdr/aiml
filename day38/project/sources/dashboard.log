@@ -1,0 +1,351 @@
+🚀 Starting ML Workflow Dashboard on http://localhost:5000
+📊 Access dashboard at: http://localhost:5000
+📡 API endpoint: http://localhost:5000/api/metrics
+ * Serving Flask app 'dashboard'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.80.130:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 243-155-067
+127.0.0.1 - - [05/Dec/2025 13:55:41] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:55:44] "POST /api/run-workflow-demo HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:55:47] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:55:48] "POST /api/run-prediction-demo HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:55:49] "POST /api/update-demo HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:55:50] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:56:01] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:56:04] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:56:04] "POST /api/run-workflow-demo HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:56:04] "POST /api/run-prediction-demo HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 13:56:04] "POST /api/update-demo HTTP/1.1" 200 -
+ * Detected change in '/home/systemdr/git/aiml/day38/sources/dashboard.py', reloading
+🚀 Starting ML Workflow Dashboard on http://localhost:5000
+📊 Access dashboard at: http://localhost:5000
+📡 API endpoint: http://localhost:5000/api/metrics
+[PROBLEM_DEFINITION] Binary classification: Positive vs Negative sentiment
+[PROBLEM_DEFINITION] Success metric: F1-score > 0.80
+[PROBLEM_DEFINITION] Business impact: Identify negative reviews for customer service
+[DATA_COLLECTION] Loading product review data...
+[DATA_COLLECTION] Collected 40 reviews
+[DATA_PREPARATION] Starting data preparation...
+[DATA_PREPARATION] Train set: 32 samples
+[DATA_PREPARATION] Test set: 8 samples
+[DATA_PREPARATION] Feature dimensions: 100
+[MODEL_TRAINING] Training logistic regression model...
+[MODEL_TRAINING] Model training complete
+[MODEL_TRAINING] Top positive words: ['excellent', 'brilliant', 'great', 'my', 'fantastic']
+[MODEL_TRAINING] Top negative words: ['not', 'money', 'terrible', 'experience', 'awful']
+[MODEL_EVALUATION] Evaluating model performance...
+[MODEL_EVALUATION] Accuracy: 0.500
+[MODEL_EVALUATION] Precision: 0.500
+[MODEL_EVALUATION] Recall: 0.750
+[MODEL_EVALUATION] F1-Score: 0.600
+[MODEL_EVALUATION] Confusion Matrix:
+[[1 3]
+ [1 3]]
+[MODEL_EVALUATION] ⚠️ Model below F1 threshold (0.8)
+[DEPLOYMENT] Saving model artifacts...
+[DEPLOYMENT] Model saved to models/sentiment_model.pkl
+[DEPLOYMENT] Vectorizer saved to models/vectorizer.pkl
+[DEPLOYMENT] ✅ Model ready for production
+[MONITORING] Making predictions on 2 new reviews...
+[MONITORING] Review 1: Positive (confidence: 0.55)
+[MONITORING] Review 2: Negative (confidence: 0.55)
+[MONITORING] Making predictions on 3 new reviews...
+[MONITORING] Review 1: Positive (confidence: 0.58)
+[MONITORING] Review 2: Negative (confidence: 0.51)
+[MONITORING] Review 3: Negative (confidence: 0.55)
+[PROBLEM_DEFINITION] Binary classification: Positive vs Negative sentiment
+[PROBLEM_DEFINITION] Success metric: F1-score > 0.80
+[PROBLEM_DEFINITION] Business impact: Identify negative reviews for customer service
+[DATA_COLLECTION] Loading product review data...
+[DATA_COLLECTION] Collected 40 reviews
+[DATA_PREPARATION] Starting data preparation...
+[DATA_PREPARATION] Train set: 32 samples
+[DATA_PREPARATION] Test set: 8 samples
+[DATA_PREPARATION] Feature dimensions: 100
+[MODEL_TRAINING] Training logistic regression model...
+[MODEL_TRAINING] Model training complete
+[MODEL_TRAINING] Top positive words: ['excellent', 'brilliant', 'great', 'my', 'fantastic']
+[MODEL_TRAINING] Top negative words: ['not', 'money', 'terrible', 'experience', 'awful']
+[MODEL_EVALUATION] Evaluating model performance...
+[MODEL_EVALUATION] Accuracy: 0.500
+[MODEL_EVALUATION] Precision: 0.500
+[MODEL_EVALUATION] Recall: 0.750
+[MODEL_EVALUATION] F1-Score: 0.600
+[MODEL_EVALUATION] Confusion Matrix:
+[[1 3]
+ [1 3]]
+[MODEL_EVALUATION] ⚠️ Model below F1 threshold (0.8)
+[DEPLOYMENT] Saving model artifacts...
+[DEPLOYMENT] Model saved to models/sentiment_model.pkl
+[DEPLOYMENT] Vectorizer saved to models/vectorizer.pkl
+[DEPLOYMENT] ✅ Model ready for production
+[MONITORING] Making predictions on 2 new reviews...
+[MONITORING] Review 1: Positive (confidence: 0.55)
+[MONITORING] Review 2: Negative (confidence: 0.55)
+[MONITORING] Making predictions on 3 new reviews...
+[MONITORING] Review 1: Positive (confidence: 0.58)
+[MONITORING] Review 2: Negative (confidence: 0.51)
+[MONITORING] Review 3: Negative (confidence: 0.55)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 243-155-067
+127.0.0.1 - - [05/Dec/2025 14:39:50] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:07] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:07] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:08] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 204 -
+127.0.0.1 - - [05/Dec/2025 14:41:10] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:11] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:13] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:15] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:18] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:19] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:22] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:24] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:26] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:28] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:31] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:32] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:35] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:37] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:39] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:39] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:41] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:43] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:46] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:47] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:50] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:52] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:54] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:56] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:41:59] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:00] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:03] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:05] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:07] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:07] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:09] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:11] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:14] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:15] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:18] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:20] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:22] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:24] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:27] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:28] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:31] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:33] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:33] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:35] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:37] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:40] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:41] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:44] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:46] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:48] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:50] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:52] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:54] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:57] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:42:59] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:01] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:01] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:03] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:05] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:08] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:09] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:12] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:14] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:16] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:18] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:20] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:22] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:25] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:27] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:29] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:29] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:31] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:33] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:35] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:37] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:40] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:42] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:44] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:46] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:48] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:50] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:53] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:55] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:57] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:57] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:43:59] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:01] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:03] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:05] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:08] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:10] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:12] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:14] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:16] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:18] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:21] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:23] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:25] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:25] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:27] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:29] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:32] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:33] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:36] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:38] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:40] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:42] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:44] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:46] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:49] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:51] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:53] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:53] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:55] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:44:57] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:00] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:01] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:04] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:06] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:08] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:10] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:13] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:14] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:17] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:19] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:21] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:23] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:25] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:27] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:30] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:31] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:34] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:36] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:35] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:37] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:39] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:41] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:44] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:45] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Dec/2025 14:45:46] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:48] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:49] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:50] "POST /api/run-workflow-demo HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:50] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:51] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:53] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:54] "POST /api/run-prediction-demo HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:54] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:55] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:58] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:45:59] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:02] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:02] "POST /api/update-demo HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:02] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:04] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:06] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:08] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:10] "POST /api/run-workflow-demo HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:11] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:11] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:12] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:15] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:15] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:15] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:15] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 204 -
+127.0.0.1 - - [05/Dec/2025 14:46:18] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:18] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:19] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 204 -
+127.0.0.1 - - [05/Dec/2025 14:46:20] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:22] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:24] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:26] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:29] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:31] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:33] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:35] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:37] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:39] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:42] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:44] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:44] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:46] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:48] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:50] "GET /api/metrics HTTP/1.1" 200 -
+127.0.0.1 - - [05/Dec/2025 14:46:52] "GET /api/metrics HTTP/1.1" 200 -
+🚀 Starting ML Workflow Dashboard on http://localhost:5000
+📊 Access dashboard at: http://localhost:5000
+📡 API endpoint: http://localhost:5000/api/metrics
+[PROBLEM_DEFINITION] Binary classification: Positive vs Negative sentiment
+[PROBLEM_DEFINITION] Success metric: F1-score > 0.80
+[PROBLEM_DEFINITION] Business impact: Identify negative reviews for customer service
+[DATA_COLLECTION] Loading product review data...
+[DATA_COLLECTION] Collected 40 reviews
+[DATA_PREPARATION] Starting data preparation...
+[DATA_PREPARATION] Train set: 32 samples
+[DATA_PREPARATION] Test set: 8 samples
+[DATA_PREPARATION] Feature dimensions: 100
+[MODEL_TRAINING] Training logistic regression model...
+[MODEL_TRAINING] Model training complete
+[MODEL_TRAINING] Top positive words: ['excellent', 'brilliant', 'great', 'my', 'fantastic']
+[MODEL_TRAINING] Top negative words: ['not', 'money', 'terrible', 'experience', 'awful']
+[MODEL_EVALUATION] Evaluating model performance...
+[MODEL_EVALUATION] Accuracy: 0.500
+[MODEL_EVALUATION] Precision: 0.500
+[MODEL_EVALUATION] Recall: 0.750
+[MODEL_EVALUATION] F1-Score: 0.600
+[MODEL_EVALUATION] Confusion Matrix:
+[[1 3]
+ [1 3]]
+[MODEL_EVALUATION] ⚠️ Model below F1 threshold (0.8)
+[DEPLOYMENT] Saving model artifacts...
+[DEPLOYMENT] Model saved to models/sentiment_model.pkl
+[DEPLOYMENT] Vectorizer saved to models/vectorizer.pkl
+[DEPLOYMENT] ✅ Model ready for production
+[MONITORING] Making predictions on 2 new reviews...
+[MONITORING] Review 1: Positive (confidence: 0.55)
+[MONITORING] Review 2: Negative (confidence: 0.55)
+[MONITORING] Making predictions on 3 new reviews...
+[MONITORING] Review 1: Positive (confidence: 0.58)
+[MONITORING] Review 2: Negative (confidence: 0.51)
+[MONITORING] Review 3: Negative (confidence: 0.55)
+[PROBLEM_DEFINITION] Binary classification: Positive vs Negative sentiment
+[PROBLEM_DEFINITION] Success metric: F1-score > 0.80
+[PROBLEM_DEFINITION] Business impact: Identify negative reviews for customer service
+[DATA_COLLECTION] Loading product review data...
+[DATA_COLLECTION] Collected 40 reviews
+[DATA_PREPARATION] Starting data preparation...
+[DATA_PREPARATION] Train set: 32 samples
+[DATA_PREPARATION] Test set: 8 samples
+[DATA_PREPARATION] Feature dimensions: 100
+[MODEL_TRAINING] Training logistic regression model...
+[MODEL_TRAINING] Model training complete
+[MODEL_TRAINING] Top positive words: ['excellent', 'brilliant', 'great', 'my', 'fantastic']
+[MODEL_TRAINING] Top negative words: ['not', 'money', 'terrible', 'experience', 'awful']
+[MODEL_EVALUATION] Evaluating model performance...
+[MODEL_EVALUATION] Accuracy: 0.500
+[MODEL_EVALUATION] Precision: 0.500
+[MODEL_EVALUATION] Recall: 0.750
+[MODEL_EVALUATION] F1-Score: 0.600
+[MODEL_EVALUATION] Confusion Matrix:
+[[1 3]
+ [1 3]]
+[MODEL_EVALUATION] ⚠️ Model below F1 threshold (0.8)
+[DEPLOYMENT] Saving model artifacts...
+[DEPLOYMENT] Model saved to models/sentiment_model.pkl
+[DEPLOYMENT] Vectorizer saved to models/vectorizer.pkl
+[DEPLOYMENT] ✅ Model ready for production
+[MONITORING] Making predictions on 2 new reviews...
+[MONITORING] Review 1: Positive (confidence: 0.55)
+[MONITORING] Review 2: Negative (confidence: 0.55)
