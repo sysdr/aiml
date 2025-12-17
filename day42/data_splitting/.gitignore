@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+
+# JavaScript
+node_modules/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Generated files
+*.png
+*.jpg
+*.jpeg
+*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
