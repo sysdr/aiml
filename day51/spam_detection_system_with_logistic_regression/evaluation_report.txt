@@ -1,0 +1,19 @@
+============================================================
+SPAM DETECTION MODEL - EVALUATION REPORT
+============================================================
+
+              precision    recall  f1-score   support
+
+         Ham       0.95      0.93      0.94       558
+        Spam       0.89      0.93      0.91       363
+
+    accuracy                           0.93       921
+   macro avg       0.92      0.93      0.92       921
+weighted avg       0.93      0.93      0.93       921
+
+
+ROC-AUC Score: 0.9727
+
+Confusion Matrix:
+[[517  41]
+ [ 27 336]]
