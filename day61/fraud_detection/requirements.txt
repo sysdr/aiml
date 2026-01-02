@@ -1,0 +1,15 @@
+# Core ML libraries
+scikit-learn==1.5.2
+imbalanced-learn==0.13.0
+numpy==1.26.4
+pandas==2.2.2
+
+# Visualization
+matplotlib==3.9.2
+seaborn==0.13.2
+
+# Testing
+pytest==8.3.3
+
+# Utilities
+joblib==1.4.2
