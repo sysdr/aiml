@@ -1,0 +1,22 @@
+[
+  {
+    "model_name": "logistic_regression",
+    "version": "v1.0.0",
+    "metrics": {
+      "accuracy": 0.94,
+      "f1_score": 0.6296296296296297
+    },
+    "timestamp": "2026-01-17T13:10:20.119970",
+    "notes": "Initial training"
+  },
+  {
+    "model_name": "random_forest",
+    "version": "v1.0.0",
+    "metrics": {
+      "accuracy": 0.935,
+      "f1_score": 0.5454545454545454
+    },
+    "timestamp": "2026-01-17T13:10:20.120389",
+    "notes": "Initial training"
+  }
+]

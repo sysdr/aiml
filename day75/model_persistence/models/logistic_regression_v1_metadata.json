@@ -1,0 +1,39 @@
+{
+  "version": "v1.0.0",
+  "model_name": "logistic_regression",
+  "accuracy": 0.94,
+  "precision": 0.864406779661017,
+  "recall": 0.49514563106796117,
+  "f1_score": 0.6296296296296297,
+  "n_features": 20,
+  "feature_names": [
+    "feature_0",
+    "feature_1",
+    "feature_2",
+    "feature_3",
+    "feature_4",
+    "feature_5",
+    "feature_6",
+    "feature_7",
+    "feature_8",
+    "feature_9",
+    "feature_10",
+    "feature_11",
+    "feature_12",
+    "feature_13",
+    "feature_14",
+    "feature_15",
+    "feature_16",
+    "feature_17",
+    "feature_18",
+    "feature_19"
+  ],
+  "training_samples": 8000,
+  "hyperparameters": {
+    "max_iter": 1000,
+    "random_state": 42
+  },
+  "saved_at": "2026-01-17T13:10:19.990501",
+  "scikit_learn_version": "1.5.3",
+  "model_type": "LogisticRegression"
+}

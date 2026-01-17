@@ -1,0 +1,41 @@
+{
+  "version": "v1.0.0",
+  "model_name": "random_forest",
+  "accuracy": 0.935,
+  "precision": 0.975,
+  "recall": 0.3786407766990291,
+  "f1_score": 0.5454545454545454,
+  "n_features": 20,
+  "feature_names": [
+    "feature_0",
+    "feature_1",
+    "feature_2",
+    "feature_3",
+    "feature_4",
+    "feature_5",
+    "feature_6",
+    "feature_7",
+    "feature_8",
+    "feature_9",
+    "feature_10",
+    "feature_11",
+    "feature_12",
+    "feature_13",
+    "feature_14",
+    "feature_15",
+    "feature_16",
+    "feature_17",
+    "feature_18",
+    "feature_19"
+  ],
+  "training_samples": 8000,
+  "hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 15,
+    "min_samples_split": 50,
+    "random_state": 42
+  },
+  "saved_at": "2026-01-17T13:10:19.993405",
+  "scikit_learn_version": "1.5.3",
+  "model_type": "RandomForestClassifier"
+}
