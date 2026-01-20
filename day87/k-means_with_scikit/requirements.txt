@@ -1,0 +1,20 @@
+# Day 87: K-Means with Scikit-learn Dependencies
+
+# Core ML libraries
+scikit-learn==1.5.2
+numpy==1.26.4
+pandas==2.2.3
+
+# Visualization
+matplotlib==3.9.2
+seaborn==0.13.2
+
+# Model persistence
+joblib==1.4.2
+
+# Testing
+pytest==8.3.3
+
+# Jupyter support (optional)
+jupyter==1.1.1
+ipykernel==6.29.5
