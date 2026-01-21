@@ -1,0 +1,24 @@
+# Python and environments
+venv/
+.venv/
+.Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Tests and coverage
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Node and JS
+node_modules/
+
+# OS / tooling
+.DS_Store
+Thumbs.db
+
+# Project artifacts
+cluster_evaluation_dashboard.png
+
