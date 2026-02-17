@@ -1,0 +1,8 @@
+scikit-learn>=1.4.0
+optuna>=3.6.0
+pandas>=2.2.0
+numpy>=1.26.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+joblib>=1.4.0
+jupyter>=1.0.0
