@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Settings:
-    GEMINI_API_KEY = "get keys for aistudio.google.com"
+    GEMINI_API_KEY = "AIzaSyDGswqDT4wQw_bd4WZtIgYAawRDZ0Gisn8"
     APP_NAME = "AI Chat Assistant"
     DEBUG = True
     HOST = "0.0.0.0"
