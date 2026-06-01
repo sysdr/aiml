@@ -6,10 +6,9 @@ Learn how if-else statements and loops power AI decision-making and data process
 
 ### 1. Setup Environment
 ```bash
-python3 -m venv ai_env
+chmod +x setup.sh
+./setup.sh
 source ai_env/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
 ```
 
 ### 2. Run the Lesson
